@@ -18,18 +18,7 @@ class Kedama extends Character{
     }
 
     update() {
-        this.x -= emenySpeed;
-        
-        
-        if (this && this.x < -100) {
-            this.destroy();
-        }
-        if (this && this.y > boardheigh + 60) {
-            this.destroy();
-        }
-        if(this.isDrop){
-            this.y += 3;
-        }
+        moving();
     }
     dropOff(){
         this.isDrop = true
@@ -46,6 +35,21 @@ class Kedama extends Character{
             }
         });
 
+    }
+    behavior(key){
+        
+    }
+    moving(){
+        this.x -= emenySpeed;
+        if (this && this.x < -100) {
+            this.destroy();
+        }
+        if (this && this.y > boardheigh + 60) {
+            this.destroy();
+        }
+        if(this.isDrop){
+            this.y += 3;
+        }
     }
     collideToBullet(bullet){
         
