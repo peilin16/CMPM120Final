@@ -4,7 +4,7 @@ class Mainlevel extends Phaser.Scene {
     }
 
     create() {
-        
+        this.isSprawn = false;
         //level = 0;
         // define keys    
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);

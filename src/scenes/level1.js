@@ -73,6 +73,13 @@ class Level1 extends Mainlevel {
 
 
 
+        this.EmenyGroup = this.physics.add.group(); // Create a bullet group
+        this.current = 0;
+        this.emenySpawn = [
+            this.emenySpawn1.bind(this),
+            this.emenySpawn2.bind(this),
+        ];
+        
 
 
 
@@ -81,10 +88,8 @@ class Level1 extends Mainlevel {
 
 
 
-
-
-
-
+        // ✅ Start the first wave
+        this.nextWave();
 
 
         this.physics.add.overlap(rumia, this.bulletGroup, (rumia, bullet) => {
@@ -115,10 +120,37 @@ class Level1 extends Mainlevel {
                 tree.update(); // Safely update each tree
             }
         });
+
+        // ✅ If no enemies are left, move to the next wave
+        //
+        this.nextWave();
+    }
+    nextWave() {
+        this.emenySpawn[this.current](); // ✅ Call the current wave function
+        this.EmenyGroup.children.iterate(enemy => {
+            if (enemy && typeof enemy.update === 'function') {
+                enemy.update(); // ✅ Ensure each enemy's update() is called
+            }
+        });
     }
 
+    emenySpawn1(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.spawnKedama()
+        }else if (this.EmenyGroup.countActive(true) === 0) {
+            this.current++; // ✅ Move to the next wave
+            this.isSprawn = false; // ✅ Reset spawn flag
+        }
+    }
 
-
+    emenySpawn2() {
+        if (!this.isSprawn) {
+            this.isSprawn = true;
+            console.log("Wave 2 started!");
+            this.spawnKedama(); // ✅ Reuse same function to spawn new enemies
+        }
+    }
 
     spawnKedama() {
         let count = Phaser.Math.Between(2, 4); // Random number of enemies
@@ -132,7 +164,7 @@ class Level1 extends Mainlevel {
             } while (!this.isPositionValid(randomY, positionList) && attempts > 0)
             positionList.push(randomY)
             let kedama = new Kedama(this, game.config.width, randomY, 'Kedama');
-            this.kedamaGroup.add(kedama);
+            this.EmenyGroup.add(kedama);
         }
     }
 }
