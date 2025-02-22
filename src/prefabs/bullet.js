@@ -29,7 +29,35 @@ class Bullet extends Phaser.GameObjects.Sprite {
     }
     // ✅ Reflect the bullet when hitting Rumia in defense mode
     reflect(normalX = 0, normalY = -1) {
-        
+        if (!this.isReflected) {
+            this.isReflected = true; // ✅ Mark as reflected
+            this.setTint(0x00ff00); // ✅ Change color to indicate deflection
+    
+            // Get current velocity
+            let velocityX = this.body.velocity.x;
+            let velocityY = this.body.velocity.y;
+    
+            // ✅ Calculate reflection vector using Phaser’s built-in physics vector
+            let normalVector = new Phaser.Math.Vector2(normalX, normalY).normalize();
+            let reflectedVelocity = new Phaser.Math.Vector2(velocityX, velocityY).reflect(normalVector);
+    
+            // ✅ Introduce a slight variation to the reflection angle
+            let angleVariation = Phaser.Math.Between(-15, 15); // Random angle variation in degrees
+            reflectedVelocity.rotate(Phaser.Math.DEG_TO_RAD * angleVariation); // ✅ Apply variation
+    
+            // ✅ Apply the new velocity after reflection
+            this.body.setVelocity(reflectedVelocity.x, reflectedVelocity.y);
+    
+            // ✅ Increase speed slightly after reflection
+            this.body.velocity.scale(1.2); // Makes the bullet move slightly faster
+    
+            // ✅ Ensure it doesn't collide with Rumia again
+            this.scene.physics.world.colliders.getActive().forEach(collider => {
+                if (collider.object1 === this && collider.object2 === rumia) {
+                    collider.destroy(); // ✅ Remove collider so Rumia isn't hit again
+                }
+            });
+        }
     }
 
     dropOff() {
@@ -50,9 +78,9 @@ class Bullet extends Phaser.GameObjects.Sprite {
             explosionEmitter.manager.emitters.remove(explosionEmitter);  
         });
         this.destroy();
-        
     }
 
+    
     // Update function to remove bullets when they go off-screen
     update() {
         if (this.y < -20 || this.y > this.scene.game.config.height + 20) {
