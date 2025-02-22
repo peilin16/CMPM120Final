@@ -5,14 +5,14 @@ class Bullet extends Phaser.GameObjects.Sprite {
         
         // Bullet properties
         this.speed = 5; // Default speed
-        this.isReflected = false; // If the bullet has been deflected
+        this.isRed = false; // If the bullet has been deflected
         this.target = target; // Target for homing bullets
         this.ableToReflect = true;
         this.shooter = null; // Who shoot this bullet
         // Add to scene and enable physics
         scene.add.existing(this);
         scene.physics.add.existing(this);
-
+        this.isReflected = false
         //this.body.setSize(10, 10);
     }
     moving() {
@@ -83,7 +83,19 @@ class Bullet extends Phaser.GameObjects.Sprite {
     
     // Update function to remove bullets when they go off-screen
     update() {
-        if (this.y < -20 || this.y > this.scene.game.config.height + 20) {
+        this.checkDestory();
+    }
+    checkDestory(){
+        if (this.y < -50) {
+            this.destroy();
+        }
+        else if (this.y > boardheigh + 100) {
+            this.destroy();
+        }
+        else if (this.x < -50) {
+            this.destroy();
+        }
+        else if (this.x > boardwidth + 100) {
             this.destroy();
         }
     }

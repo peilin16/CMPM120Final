@@ -33,11 +33,13 @@ let config = {
 
 // uncomment the following line if you need to purge local storage data
 //localStorage.clear();
+let data = new dataRecord();
 let score = 0;
 let ScoreRate = 1;
 let treeSpeed = 2;
 let keyA,keyS,keyD,keyW,keyK,keyJ,keyShift,keyESC,keySpace
 let emenySpeed = 3;
+let shootingLogic // tool class
 let rumia
 // define game
 let game = new Phaser.Game(config);

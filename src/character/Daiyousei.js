@@ -24,7 +24,7 @@ class Daiyousei extends Character{
         scene.physics.add.existing(this);
         this.play('DaiyouseiScore'); // Play the 'rumiaFly' animation
 
-        this.isTouch = false;
+        
         this.isEmeny = false;
         this.isDrop = false;
         this.kind = 'd'
@@ -44,14 +44,15 @@ class Daiyousei extends Character{
             this.destroy();
         }
     }
-    behavior(rumia){
+    /*
+    behavior(key){
         if(!this.isTouch){
             this.isTouch = true
             score += 20 + (ScoreRate * 10);
             ScoreRate += 1
         }
         
-    }
+    }*/
     dropOff(){
         this.setTexture('DaiyouseiNothing1')
         this.anims.stop();

@@ -1,5 +1,5 @@
 class Character extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, frame) {
+    constructor(scene, x, y, texture,type, frame) {
         super(scene, x, y, texture, frame);
 
         // Add to scene and enable physics
@@ -10,11 +10,13 @@ class Character extends Phaser.GameObjects.Sprite {
         this.healthly = 3; 
         this.isEmeny = false; 
         this.isDrop = false; 
-        this.type = 'neutral'; 
+        this.type = type; 
         this.ableToDefence = false; 
-        this.isTouch = false; 
+        this.behavior = '';
+        this.subtype = '';
         this.speed = 3;
-
+        this.heigh = 0;
+        this.width = 0;
         this.body.setImmovable(true); // ✅ Prevents movement from collisions
         this.body.setVelocity(0, 0);  // ✅ Ensures Rumia stays in place
 
@@ -30,19 +32,47 @@ class Character extends Phaser.GameObjects.Sprite {
         this.isDrop = true;
         this.scene.tweens.add({
             targets: this,
-            angle: 360, 
-            duration: 1000, 
+            angle: -360, 
+            duration: 700, 
             ease: 'Linear',
-            onComplete: () => this.destroy() // Remove after animation
+            repeat: -1, 
+            onComplete: () => {
+                this.destroy(); // Remove the object after animation
+            }
         });
+        
     }
     
     
+    // ✅ Check if the character should be destroyed when off-screen
+    checkDestroy(board) {
+        let screenWidth = game.config.width;
+        let screenHeight = game.config.height;
 
-    // Method for generic behavior (to be overridden in subclasses)
-    behavior() {
-        console.log(`${this.type} character behavior`);
-    }
+        switch (board) {
+            case 'top':
+                if (this.y < -50) {
+                    this.destroy();
+                }
+                break;
+            case 'bottom':
+                if (this.y > screenHeight + 50) {
+                    this.destroy();
+                }
+                break;
+            case 'left':
+                if (this.x < -50) {
+                    this.destroy();
+                }
+                break;
+            case 'right':
+                if (this.x > screenWidth + 50) {
+                    this.destroy();
+                }
+                break;
+        }
+    }    
+
 
     // Collision handling
     collide(obj) {

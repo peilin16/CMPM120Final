@@ -4,7 +4,7 @@ class Mainlevel extends Phaser.Scene {
     }
 
     create() {
-        this.isSprawn = false;
+        this.isSprawn = false;//sprawn flag
         //level = 0;
         // define keys    
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -16,7 +16,7 @@ class Mainlevel extends Phaser.Scene {
         keyJ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
         keyShift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         
-        let shootingLogic = new stgShootingLogic();
+        
 
         this.EmenyGroup = this.physics.add.group(); // Create a Emeny group
         this.bulletGroup = this.physics.add.group(); // Create a bullet group
@@ -43,6 +43,9 @@ class Mainlevel extends Phaser.Scene {
             frameRate: 10,
             hideOnComplete: true
         });
+
+        //add collider with help
+
     }
 
     // create new barriers and add them to existing barrier group
@@ -51,14 +54,12 @@ class Mainlevel extends Phaser.Scene {
     update() {
         
         rumia.update();
-
-        /*
-        this.kedamaGroup.children.iterate(kedama => {
-            if (kedama && typeof kedama.update === 'function') {
-                kedama.update(); // Safely update each tree
+        // update bullet
+        this.bulletGroup.children.iterate(bullet => {
+            if (bullet && typeof bullet.update === 'function') {
+                bullet.update(); // Safely update each tree
             }
         });
-        */
         
     }
     //game over
@@ -135,7 +136,8 @@ class Mainlevel extends Phaser.Scene {
         // Flash effect
         rumia.collide(obj);
         obj.collide(rumia); //  Call obj’s collide behavior
-        obj.dropOff()
+        if(obj.healthly <= 0)
+            obj.dropOff()
         if(rumia.healthly < 0){
             rumia.dropOff();
             rumia.time.delayedCall(3000, () => {
@@ -149,18 +151,18 @@ class Mainlevel extends Phaser.Scene {
         //rumia.isHit = true;
     }
 
-    spawnEmeny(num, type, Emeny) {
+    spawnEmeny(num, type, Emeny,subtype = '',behavior = '',startX = game.config.width + 50 ,startY =  boardheigh /4 ) {
         //let count = num//Phaser.Math.Between(1, num); // Random number of enemies
         let positionList = [];
         let emeny;
         let spacing = 50; // Distance between enemies
-        let startX = game.config.width + 50; // ✅ Always spawn enemies from the right side
-        let startY = Phaser.Math.Between(60, boardheigh - 60); // Start y position
+        //let startX = game.config.width + 50; // ✅ Always spawn enemies from the right side
+        //let startY =  boardheigh /4 //Phaser.Math.Between(60, boardheigh - 60); // Start y position
     
         for (let i = 0; i < num; i++) {
             let posX = startX;
             let posY = startY;
-    
+            
             switch (type) {
                 case 'list': // ✅ Enemies spawn at fixed distances
                     posY = startY + i * spacing;
@@ -169,19 +171,37 @@ class Mainlevel extends Phaser.Scene {
                     posY = Phaser.Math.Between(60, boardheigh - 60);
                     break;
                 case 'arrow': // ✅ Arranges enemies in an arrow shape
-                    posY = startY + (i % 2 === 0 ? i * spacing : -i * spacing);
-                    posX = startX - (i * spacing / 2); // Stagger x positions
+                    posY = startY + (i % 2 === 0 ? i * spacing : -i * spacing) + 60;
+                    posX = startX - (i * spacing / 2) -60; // Stagger x positions
                     break;
                 case 'diagonal': // ✅ Arranges enemies diagonally
-                    posY = startY + i * spacing;
-                    posX = startX - i * spacing;
+                    posY =30 + startY + i * spacing;
+                    posX = startX - i * spacing - 30;
+                    break;
+                case 'wideList': // ✅ Arranges enemies evenly across the width
+                    let availableWidth = game.config.width - 100; // Exclude borders
+                    let gap = availableWidth / (num + 1); // ✅ Ensure even spacing
+                    posX = game.config.width + 50; // Spawn outside the screen
+                    posY = 60 + gap * (i + 1); // Distribute enemies evenly
                     break;
             }
     
             if (Emeny == 'Kedama') {
                 emeny = new Kedama(this, posX, posY, 'Kedama');
+            }else if(Emeny == 'DivineSpirit'){
+                emeny = new DivineSpirit(this, posX, posY);
             }
+            emeny.subType = subtype ;
+            emeny.behavior= behavior;
             
+            
+            
+            //add collider with emeny
+            this.physics.add.overlap(rumia, emeny, (rumia, emeny) => {
+                if (!rumia.isHit ) { 
+                    this.handleCollision(rumia, emeny);
+                }
+            });
             this.EmenyGroup.add(emeny);
         }
     }

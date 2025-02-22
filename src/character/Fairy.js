@@ -1,6 +1,11 @@
 class Fairy extends Character{
-    constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture, frame)
+    constructor(scene, x, y, t, frame) {
+        if(t == 'sunflower'){
+            super(scene, x, y, 'sunflowerFairy1', frame)
+        }else{
+            super(scene, x, y, 'dandelionFairy1', frame)
+        }
+        
         
         scene.add.existing(this);
         scene.physics.add.existing(this);

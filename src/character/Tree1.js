@@ -1,6 +1,6 @@
 class Tree1 extends Character {
     constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture, frame)
+        super(scene, x, y, 'tree1','tree', frame)
         
         scene.add.existing(this);
         scene.physics.add.existing(this);

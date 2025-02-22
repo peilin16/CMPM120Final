@@ -2,43 +2,30 @@
 
 class Kedama extends Character{
     constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture, frame)
+        super(scene, x, y, texture,'Kedama', frame)
         
         scene.add.existing(this);
         scene.physics.add.existing(this);
         
         this.isEmeny = true;
         this.isDrop = false;
-        this.kind = 'k'
-        this.body.setSize(45, 45, true); // Adjust hitbox size
+        this.subType = 'Kedama-White'; 
+        this.body.setSize(data.getData('kedama_width'), data.getData('kedama_height'), true); // Adjust hitbox size
         this.body.setOffset(0, 5); 
         this.ableToDefence = true; //decide the object able to defence
         this.isRebound = false; // if object in rebound state
-         
+        this.heigh = 45;
+        this.width = 45;
     }
 
     update() {
-        moving();
+        this.moving();
     }
     dropOff(){
-        this.isDrop = true
         this.setTexture('KedamaHit');
-        
-        this.scene.tweens.add({
-            targets: this,
-            angle: -360, 
-            duration: 700, 
-            ease: 'Linear',
-            repeat: -1, 
-            onComplete: () => {
-                this.destroy(); // Remove the object after animation
-            }
-        });
+        super.dropOff();
+    }
 
-    }
-    behavior(key){
-        
-    }
     moving(){
         this.x -= emenySpeed;
         if (this && this.x < -100) {
@@ -54,7 +41,10 @@ class Kedama extends Character{
     collideToBullet(bullet){
         
     } 
-    collide(){
+    collide(obj) {
+        if(obj.type == 'player'){
+            this.dropOff();
+        }
         
     }
     reset(){

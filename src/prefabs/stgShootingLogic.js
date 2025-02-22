@@ -22,7 +22,7 @@ class stgShootingLogic{
         // Set bullet velocity toward the target
         bullet.body.setVelocity(direction.x * bullet.speed, direction.y * bullet.speed);
     }
-
+  
 
     //advanced bullet method
 

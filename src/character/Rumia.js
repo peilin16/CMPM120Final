@@ -1,8 +1,8 @@
 class Rumia extends Character{
     
     constructor(scene, x, y,  frame) {
-        super(scene, x, y, 'rumiafly1', frame)
-        this.type = 'player';
+        super(scene, x, y, 'rumiafly1','player', frame)
+        
         this.healthly = 3; 
         this.speed = 3.5;
         this.boomber = 0;
@@ -94,11 +94,13 @@ class Rumia extends Character{
         if (keyShift.isDown) {
             this.speed = this.Speed + 2
         }*/
+        
+       
         if (keyK.isDown && this.isdefence == false && this.isSpecialanimePlaying == false) {
-            //code
+                    //code
             this.enterDefenseMode();
-            
-        }else if(!keyK.isDown && this.isdefence == true  && this.isSpecialanimePlaying == false){
+        }        
+        else if(!keyK.isDown && this.isdefence == true  && this.isSpecialanimePlaying == false){
             // 
              this.endDefenseMode();
          }
@@ -157,7 +159,7 @@ class Rumia extends Character{
 
     collide(obj) {
         
-        if (!this.isDrop) {
+        if (!this.isDrop && !obj.isDrop) {
             if (!obj.isEmeny) { // If colliding with a friendly object
                 if (!obj.isTouch) {
                     let pickUpSound = this.scene.getAudio('p'); // ✅ Call from scene
@@ -166,9 +168,13 @@ class Rumia extends Character{
                 //obj.behavior(this);
                 //obj.dropOff();
             } else if (!this.isHit) { // If colliding with an enemy
+                
+                if(this.isdefence && obj.type == 'Kedama-White'){
+                    return;
+                }
                 this.isHit = true;
                 this.healthly--; // Reduce health
-    
+                //this.isdefence  = false
                 let hitSound = this.scene.getAudio('h'); // ✅ Call from scene
                 if (hitSound) hitSound.play();
     
@@ -199,6 +205,7 @@ class Rumia extends Character{
 
             this.body.ov
             this.isHit = true;
+            //this.isdefence  = false
             //this.healthly--; // Reduce health
             score -= 5;
             this.setTexture('rumiaflyhit');

@@ -23,7 +23,7 @@ class Level1 extends Mainlevel {
         
         // Spawn trees at intervals
         this.time.addEvent({
-            delay: 5000,
+            delay: 13000,
             callback: () => {
                 //console.log("Spawning tree...");
                 let tree1 = new Tree1(this, 1000, 500, 'tree1');
@@ -48,7 +48,7 @@ class Level1 extends Mainlevel {
             loop: true
         });
         this.physics.add.collider(rumia, this.trees, this.handleCollision, null, this);
-
+        
         //emeny occur
         
         
@@ -76,8 +76,10 @@ class Level1 extends Mainlevel {
         
         this.current = 0;
         this.emenySpawn = [
-            this.emenySpawn1.bind(this),
             this.emenySpawn2.bind(this),
+            this.emenySpawn1.bind(this),
+            
+            this.emenySpawn3.bind(this),
         ];
         
 
@@ -86,12 +88,6 @@ class Level1 extends Mainlevel {
         // ✅ Start the first wave
         this.nextWave();
 
-
-        this.physics.add.overlap(rumia, this.bulletGroup, (rumia, bullet) => {
-            if (!rumia.isHit && !bullet.isReflected) { 
-                this.bulletCollision(rumia, bullet);
-            }
-        });
         //music
         /*
         this.bgMusic = this.sound.add('background', { 
@@ -122,30 +118,46 @@ class Level1 extends Mainlevel {
     }
     nextWave() {
         this.emenySpawn[this.current](); // ✅ Call the current wave function
+        // update emeny state
         this.EmenyGroup.children.iterate(enemy => {
             if (enemy && typeof enemy.update === 'function') {
                 enemy.update(); // ✅ Ensure each enemy's update() is called
             }
         });
     }
-
+    //spawn emeny
     emenySpawn1(){
         if(!this.isSprawn){
             this.isSprawn = true;
-            this.spawnEmeny(3,'list','Kedama')
+            super.spawnEmeny(3,'wideList','Kedama')
         }else if (this.EmenyGroup.countActive(true) === 0) {
             this.current++; // ✅ Move to the next wave
             this.isSprawn = false; // ✅ Reset spawn flag
         }
     }
-
     emenySpawn2() {
         if (!this.isSprawn) {
             this.isSprawn = true;
             console.log("Wave 2 started!");
-            this.spawnEmeny(5,'arrow','Kedama'); // ✅ Reuse same function to spawn new enemies
+            this.spawnEmeny(2, 'list', 'DivineSpirit','blue','r_shooting2_l'); // ✅ Spawns one DivineSpirit
+        }
+    }
+    emenySpawn3() {
+        if (!this.isSprawn) {
+            this.isSprawn = true;
+            console.log("Wave 3 started!");
+            super.spawnEmeny(5,'arrow','Kedama'); // ✅ Reuse same function to spawn new enemies
         }
     }
 
+
+
+
+    midBossSpawn(){
+
+    }
+    FinalBossSpawn(){
+
+    }
   
 }
