@@ -16,6 +16,12 @@ class Mainlevel extends Phaser.Scene {
         keyJ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
         keyShift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         
+        let shootingLogic = new stgShootingLogic();
+
+        this.EmenyGroup = this.physics.add.group(); // Create a Emeny group
+        this.bulletGroup = this.physics.add.group(); // Create a bullet group
+        this.helperGroup = this.physics.add.group();
+
         this.scoreConfig = {
             fontFamily: 'Courier',
             fontSize: '20px',
@@ -141,6 +147,43 @@ class Mainlevel extends Phaser.Scene {
         this.RumiahealthText.setText('[H]:'+rumia.healthly);
         this.CurrentScoreText.setText('[P]:'+rumia.score);
         //rumia.isHit = true;
+    }
+
+    spawnEmeny(num, type, Emeny) {
+        //let count = num//Phaser.Math.Between(1, num); // Random number of enemies
+        let positionList = [];
+        let emeny;
+        let spacing = 50; // Distance between enemies
+        let startX = game.config.width + 50; // ✅ Always spawn enemies from the right side
+        let startY = Phaser.Math.Between(60, boardheigh - 60); // Start y position
+    
+        for (let i = 0; i < num; i++) {
+            let posX = startX;
+            let posY = startY;
+    
+            switch (type) {
+                case 'list': // ✅ Enemies spawn at fixed distances
+                    posY = startY + i * spacing;
+                    break;
+                case 'random_list': // ✅ Enemies spawn at random Y positions
+                    posY = Phaser.Math.Between(60, boardheigh - 60);
+                    break;
+                case 'arrow': // ✅ Arranges enemies in an arrow shape
+                    posY = startY + (i % 2 === 0 ? i * spacing : -i * spacing);
+                    posX = startX - (i * spacing / 2); // Stagger x positions
+                    break;
+                case 'diagonal': // ✅ Arranges enemies diagonally
+                    posY = startY + i * spacing;
+                    posX = startX - i * spacing;
+                    break;
+            }
+    
+            if (Emeny == 'Kedama') {
+                emeny = new Kedama(this, posX, posY, 'Kedama');
+            }
+            
+            this.EmenyGroup.add(emeny);
+        }
     }
     levelBump() {
         // increment level (ie, score)

@@ -54,7 +54,7 @@ class Level1 extends Mainlevel {
         
         
         
-        this.bulletGroup = this.physics.add.group(); // Create a bullet group
+        
         this.time.addEvent({
             delay: 2000, // Fire every 2 seconds
             callback: () => {
@@ -73,18 +73,13 @@ class Level1 extends Mainlevel {
 
 
 
-        this.EmenyGroup = this.physics.add.group(); // Create a bullet group
+        
         this.current = 0;
         this.emenySpawn = [
             this.emenySpawn1.bind(this),
             this.emenySpawn2.bind(this),
         ];
         
-
-
-
-
-
 
 
 
@@ -137,7 +132,7 @@ class Level1 extends Mainlevel {
     emenySpawn1(){
         if(!this.isSprawn){
             this.isSprawn = true;
-            this.spawnKedama()
+            this.spawnEmeny(3,'list','Kedama')
         }else if (this.EmenyGroup.countActive(true) === 0) {
             this.current++; // ✅ Move to the next wave
             this.isSprawn = false; // ✅ Reset spawn flag
@@ -148,23 +143,9 @@ class Level1 extends Mainlevel {
         if (!this.isSprawn) {
             this.isSprawn = true;
             console.log("Wave 2 started!");
-            this.spawnKedama(); // ✅ Reuse same function to spawn new enemies
+            this.spawnEmeny(5,'arrow','Kedama'); // ✅ Reuse same function to spawn new enemies
         }
     }
 
-    spawnKedama() {
-        let count = Phaser.Math.Between(2, 4); // Random number of enemies
-        let positionList = [];
-        for (let i = 0; i < count; i++) {
-            let attempts = 10; 
-            let randomY;
-            do {
-                randomY = Phaser.Math.Between(60, boardheigh - 60);
-                attempts--;
-            } while (!this.isPositionValid(randomY, positionList) && attempts > 0)
-            positionList.push(randomY)
-            let kedama = new Kedama(this, game.config.width, randomY, 'Kedama');
-            this.EmenyGroup.add(kedama);
-        }
-    }
+  
 }
