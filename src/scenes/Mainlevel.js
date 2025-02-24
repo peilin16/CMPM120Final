@@ -7,6 +7,8 @@ class Mainlevel extends Phaser.Scene {
         this.isSprawn = false;//sprawn flag
         //level = 0;
         // define keys    
+        
+        this.installShootingLogic(); // ✅ Attach shooting logic to this scene
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -64,7 +66,12 @@ class Mainlevel extends Phaser.Scene {
     }
     //game over
     gameOver(){
-        this.scene.start('titleScene');
+        rumia.dropOff();
+            rumia.time.delayedCall(3000, () => {
+                this.bgMusic.stop(); // Stop background music
+                this.scene.start('titleScene');
+            }, [], this);        
+        //
     }
     
     getAudio(require) {
@@ -93,15 +100,36 @@ class Mainlevel extends Phaser.Scene {
         }
         return true; // Valid position
     }
-
+    getReflection(bullet,normalVectorX,normalVectorY){
+        let rate = 40;
+        /*switch(bullet.type){
+            case 'blueSmallCircleBullet':
+                rate = 40;
+                break;
+            case 'blueMediumCircleBullet':
+                rate = 40;
+                break;
+            case 'blueLargeCircleBullet':
+                rate = 40;
+                break;    
+        }*/
+        bullet.reflect(normalVectorX, normalVectorY,rate);
+        return bullet;
+    }
     //bullet collision
     bulletCollision(obj, bullet){
         if(!obj.isDrop){
-           
             if(obj.type == 'player'){
-                if(!obj.isHit){
-                    if (obj.isdefence) { // ✅ Reflect the bullet when defending
-
+                if(!obj.isHit  && !bullet.isReflected ){
+                    if (obj.isdefence ) { // ✅ Reflect the bullet when defending
+                        if(bullet.isRed && rumia.unableDefence <= 0){
+                            rumia.endDefenseMode();
+                            rumia.unableDefence = 4;
+                            rumia.notDefenceState();
+                            bullet.dropOff();
+                            return;
+                        }
+                           
                         /*this.scene.tweens.add({
                             targets: this,
                             alpha: 0.2, // Reduce opacity
@@ -114,14 +142,25 @@ class Mainlevel extends Phaser.Scene {
                 
                         let normalVector = new Phaser.Math.Vector2(normalX, normalY).normalize();
                 
-                        bullet.reflect(normalVector.x, normalVector.y);
+                        //bullet.reflect(normalVector.x, normalVector.y);
+                        bullet = this.getReflection(bullet,normalVector.x, normalVector.y );
+
+                        //.children.iterate(emeny => {
+                        this.physics.add.collider(this.EmenyGroup, bullet, (reflectedBullet,enemy ) => {
+                            this.bulletCollision(enemy, reflectedBullet);
+                        });
+                        //});
+                        
                         return
+                    }
+                    else if(rumia.unableDefence == 4)
+                    {
+                        bullet.dropOff();
+                        return;
                     } 
                     obj.collideToBullet(bullet);
                     bullet.dropOff();
                     //this.colliderObject.destroy();
-                }else{
-                   // bullet.destroy();
                 }
             }else{
                 obj.collideToBullet(bullet);
@@ -139,11 +178,8 @@ class Mainlevel extends Phaser.Scene {
         if(obj.healthly <= 0)
             obj.dropOff()
         if(rumia.healthly < 0){
-            rumia.dropOff();
-            rumia.time.delayedCall(3000, () => {
-                this.bgMusic.stop(); // Stop background music
-                this.gameOver();
-            }, [], this);            
+            //this.gameOver();
+                
             //this.gameOver();
         }
         this.RumiahealthText.setText('[H]:'+rumia.healthly);
@@ -151,57 +187,88 @@ class Mainlevel extends Phaser.Scene {
         //rumia.isHit = true;
     }
 
-    spawnEmeny(num, type, Emeny,subtype = '',behavior = '',startX = game.config.width + 50 ,startY =  boardheigh /4 ) {
-        //let count = num//Phaser.Math.Between(1, num); // Random number of enemies
+    spawnEmeny(num, type, Emeny, subtype = '', behavior = '', startY = boardheigh / 4, startX = game.config.width + 50) {
         let positionList = [];
         let emeny;
-        let spacing = 50; // Distance between enemies
-        //let startX = game.config.width + 50; // ✅ Always spawn enemies from the right side
-        //let startY =  boardheigh /4 //Phaser.Math.Between(60, boardheigh - 60); // Start y position
+        let spacing;
+        
+        let data = new dataRecord(); // ✅ Access enemy sizes
+        let enemyWidth, enemyHeight;
+    
+        switch (Emeny) {
+            case 'Kedama':
+                enemyWidth = data.getData('kedama_width');
+                enemyHeight = data.getData('kedama_height');
+                break;
+            case 'DivineSpirit':
+                enemyWidth = data.getData('blueDivineSpirit_width');
+                enemyHeight = data.getData('blueDivineSpirit_height');
+                break;
+            case 'SunFlowerFairy':
+                enemyWidth = data.getData('sunflowerFairy_width');
+                enemyHeight = data.getData('sunflowerFairy_height');
+                break;
+            default:
+                console.warn(`Unknown enemy type: ${Emeny}`);
+                return;
+        }
+    
+        spacing = enemyWidth; // ✅ Default spacing is 1 body length
     
         for (let i = 0; i < num; i++) {
             let posX = startX;
             let posY = startY;
-            
+    
             switch (type) {
-                case 'list': // ✅ Enemies spawn at fixed distances
-                    posY = startY + i * spacing;
+                case 'list': // ✅ Keep a vertical distance of 1 body length
+                    posY = startY + (i * enemyHeight) ;
+                    if(i > 0){
+                        posY += i*enemyHeight
+                    }
                     break;
-                case 'random_list': // ✅ Enemies spawn at random Y positions
-                    posY = Phaser.Math.Between(60, boardheigh - 60);
+                case 'random_list': // ✅ Randomize vertical position while keeping spacing
+                    do {
+                        posY = Phaser.Math.Between(60, boardheigh - 60);
+                    } while (positionList.some(y => Math.abs(y - posY) < enemyHeight));
                     break;
-                case 'arrow': // ✅ Arranges enemies in an arrow shape
-                    posY = startY + (i % 2 === 0 ? i * spacing : -i * spacing) + 60;
-                    posX = startX - (i * spacing / 2) -60; // Stagger x positions
+                case 'arrow': // ✅ Arrange in arrow shape, spacing vertically and diagonally
+                    posY = startY + (i % 2 === 0 ? i * enemyHeight : -i * enemyHeight) + 60;
+                    posX = startX - (i * spacing / 2) - 60;
                     break;
-                case 'diagonal': // ✅ Arranges enemies diagonally
-                    posY =30 + startY + i * spacing;
+                case 'diagonal': // ✅ Arrange diagonally with 1 body length spacing
+                    posY = 30 + startY + i * enemyHeight;
                     posX = startX - i * spacing - 30;
                     break;
-                case 'wideList': // ✅ Arranges enemies evenly across the width
-                    let availableWidth = game.config.width - 100; // Exclude borders
-                    let gap = availableWidth / (num + 1); // ✅ Ensure even spacing
-                    posX = game.config.width + 50; // Spawn outside the screen
-                    posY = 60 + gap * (i + 1); // Distribute enemies evenly
+                case 'wideList': // ✅ Arrange in a wide list with 2 body length spacing
+                    posY = startY + (i * enemyHeight) ;
+                    if(i > 0){
+                        posY += 2* i * enemyHeight
+                    }
                     break;
             }
     
-            if (Emeny == 'Kedama') {
+            // ✅ Create the enemy instance
+            if (Emeny === 'Kedama') {
                 emeny = new Kedama(this, posX, posY, 'Kedama');
-            }else if(Emeny == 'DivineSpirit'){
-                emeny = new DivineSpirit(this, posX, posY);
+            } else if (Emeny === 'DivineSpirit') {
+                emeny = new DivineSpirit(this, posX, posY,subtype);
+            } else if (Emeny === 'SunFlowerFairy') {
+                emeny = new Fairy(this, posX, posY, 'SunFlowerFairy');
             }
-            emeny.subType = subtype ;
-            emeny.behavior= behavior;
-            
-            
-            
-            //add collider with emeny
+    
+            emeny.subType = subtype;
+            emeny.behavior = behavior;
+    
+            // ✅ Ensure spacing is maintained
+            positionList.push(posY);
+    
+            // ✅ Add collision with Rumia
             this.physics.add.overlap(rumia, emeny, (rumia, emeny) => {
-                if (!rumia.isHit ) { 
+                if (!rumia.isHit) {
                     this.handleCollision(rumia, emeny);
                 }
             });
+    
             this.EmenyGroup.add(emeny);
         }
     }

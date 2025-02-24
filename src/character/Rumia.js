@@ -7,11 +7,14 @@ class Rumia extends Character{
         this.speed = 3.5;
         this.boomber = 0;
         this.score = 0;
-        this.ableToDefence = false; 
+        this.ableToDefence = true; 
         this.isdefence = false;
         this.isSpecialanimePlaying = false;
         this.collideCircleRadius = 22;
-        this.collideCircleRadiusOffset = [30,14]  
+        this.collideCircleRadiusOffset = [30,14]
+        this.Xspeed = 0;
+        this.unableDefence = 0;
+
         this.isHit = false;
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -19,7 +22,13 @@ class Rumia extends Character{
         this.body.setCircle(22); // ✅ Set a circular hitbox with radius 25
         //this.body.setSize(25, 25); // ✅ Adjust width/height to fit the oval shape
         this.body.setOffset(30, 14);
-          
+        // ✅ Create countdown text (initially hidden)
+        this.defenseCountdownText = scene.add.text(this.x, this.y - 40, '', {
+            fontSize: '18px',
+            fontFamily: 'Arial',
+            color: '#ff0000',
+            fontStyle: 'bold'
+        }).setOrigin(0.5).setVisible(false);          
         // create anims rumia fly
         this.anims.create({
             key: 'rumiaFly',
@@ -66,17 +75,44 @@ class Rumia extends Character{
         }else{
             this.y +=4
         }
+        if( this.unableDefence <= 0){
+            this.ableToDefence = true; 
+        }
+        // ✅ Update defense countdown text position and value
+        this.defenseCountdownText.setPosition(this.x, this.y - 40);
+        if (this.unableDefence > 0) {
+            this.defenseCountdownText.setText(this.unableDefence.toFixed(1)); // Show time left
+            this.defenseCountdownText.setVisible(true);
+        } else {
+            this.defenseCountdownText.setVisible(false); // Hide when countdown ends
+        }
+    }
+    notDefenceState() {
+        // Spawn trees at intervals
+        if(!this.ableToDefence)
+            return
+        this.scene.time.addEvent({
+            delay: 1000,
+            repeat: 3,
+            callback: () => {
+                this.unableDefence -= 1;
+            },
+            callbackScope: this,
+            loop: false
+        });
+        this.ableToDefence = false; 
 
     }
+
     playerMoving(){
         // Remove obstacles when they leave the screen
-        if(this.isdefence == false){
+        
             if (keyA.isDown && this.x > 32) {
             
                 this.x -= this.speed
             }
             if (keyS.isDown && this.y < 480) {
-                
+                   
                 this.y += this.speed
             }
             
@@ -86,7 +122,7 @@ class Rumia extends Character{
             if (keyD.isDown && this.x < 950) {
                 this.x += this.speed
             }
-        }
+        
         
         /*if (!keyShift.isDown) {
             this.speed = this.Speed
@@ -96,14 +132,12 @@ class Rumia extends Character{
         }*/
         
        
-        if (keyK.isDown && this.isdefence == false && this.isSpecialanimePlaying == false) {
-                    //code
+        // ✅ Prevent entering defense mode if unableDefence > 0
+        if (keyK.isDown && this.isdefence === false && this.isSpecialanimePlaying === false && this.unableDefence <= 0) {
             this.enterDefenseMode();
-        }        
-        else if(!keyK.isDown && this.isdefence == true  && this.isSpecialanimePlaying == false){
-            // 
-             this.endDefenseMode();
-         }
+        } else if (!keyK.isDown && this.isdefence === true && this.isSpecialanimePlaying === false) {
+            this.endDefenseMode();
+        }
         
         
             // Prevent character from going outside the board
@@ -125,7 +159,7 @@ class Rumia extends Character{
 
     }
     enterDefenseMode() {
-        this.isdefence = true; // Set to defense mode
+        
         this.anims.stop();
         this.anims.play('rumiaDefenceStart'); // Play defense start animation
         this.isSpecialanimePlaying = true 
@@ -135,6 +169,7 @@ class Rumia extends Character{
             this.isSpecialanimePlaying = false; 
             this.body.setImmovable(true)
             //alert('aaa')
+            this.isdefence = true; // Set to defense mode
                 // ✅ Restore normal attack range
             this.body.setCircle(52);  // Reset collider size
             this.body.setOffset(4, 3); // Reset offset
@@ -145,12 +180,13 @@ class Rumia extends Character{
         this.anims.play('rumiaDefenceEnd'); // Play defense exit animation
         this.isSpecialanimePlaying = true;
         //alert('aaa')
+        this.isdefence = false;
         this.body.setCircle(22);  // Reset collider size
         this.body.setOffset(30, 14); // Reset offset
         this.once('animationcomplete', () => {
             this.setTexture('rumiafly1'); // Reset to normal state
             this.isSpecialanimePlaying = false;
-            this.isdefence = false;
+            
             this.play('rumiaFly');
                 // ✅ Restore normal attack range
             
@@ -168,15 +204,16 @@ class Rumia extends Character{
                 //obj.behavior(this);
                 //obj.dropOff();
             } else if (!this.isHit) { // If colliding with an enemy
-                
-                if(this.isdefence && obj.type == 'Kedama-White'){
+                let hitSound = this.scene.getAudio('h'); // ✅ Call from scene
+                if (hitSound) hitSound.play();
+                if(this.isdefence && obj.type == 'Kedama'){
                     return;
                 }
+                this.isSpecialanimePlaying = true;
                 this.isHit = true;
                 this.healthly--; // Reduce health
                 //this.isdefence  = false
-                let hitSound = this.scene.getAudio('h'); // ✅ Call from scene
-                if (hitSound) hitSound.play();
+                
     
                 // Damage animation effect
                 this.anims.stop();
@@ -193,6 +230,7 @@ class Rumia extends Character{
                         this.play('rumiaFly'); // ✅ Resume flying animation
                         this.alpha = 1; // ✅ Reset transparency
                         this.isHit = false; // ✅ Allow another hit
+                        this.isSpecialanimePlaying = false;
                     }
                 });
 
@@ -206,7 +244,7 @@ class Rumia extends Character{
             this.body.ov
             this.isHit = true;
             //this.isdefence  = false
-            //this.healthly--; // Reduce health
+            this.healthly--; // Reduce health
             score -= 5;
             this.setTexture('rumiaflyhit');
     

@@ -1,76 +1,97 @@
 class Fairy extends Character{
-    constructor(scene, x, y, t, frame) {
-        if(t == 'sunflower'){
+    constructor(scene, x, y, type, frame) {
+        if(type == 'SunFlowerFairy'){
             super(scene, x, y, 'sunflowerFairy1', frame)
+            this.anims.create({
+                key: 'sunflowerFairy',
+                frames: [
+                    { key: 'sunflowerFairy1' },
+                    { key: 'sunflowerFairy2' },
+                    { key: 'sunflowerFairy3' },
+                ],
+                frameRate: 10, // 10 frames per second
+                repeat: -1 // Loop infinitely
+            });
+            this.play('sunflowerFairy'); // Play the 'rumiaFly' animation
+            this.subtype = 'sunflower'
+            this.body.setSize(data.getData('sunflowerFairy_width') , data.getData('sunflowerFairy_height'), true); // Adjust hitbox size
+            this.body.setOffset(5, 5); 
+            this.speed = data.getData('sunflowerFairy_speed') 
         }else{
             super(scene, x, y, 'dandelionFairy1', frame)
+            this.anims.create({
+                key: 'dandelionFairy',
+                frames: [
+                    { key: 'dandelionFairy1' },
+                    { key: 'dandelionFairy2' },
+                    { key: 'dandelionFairy3' },
+                ],
+                frameRate: 10, // 10 frames per second
+                repeat: -1 // Loop infinitely
+            });
+            this.play('dandelionFairy'); // Play the 'rumiaFly' animation
+            this.subtype = 'dandelion'
+            this.body.setSize(data.getData('dandelionFairy_width') , data.getData('dandelionFairy_height'), true); // Adjust hitbox size
+            this.body.setOffset(5, 5); 
+            this.speed = data.getData('dandelionFairy_speed') 
         }
         
         
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        
+        this.healthly = 17;
         this.isDrop = false;
-        this.kind = 'k'
-        this.direction = 1; 
-        this.speed = emenySpeed; 
+        this.kind = 'f'
+        //this.speed = emenySpeed; 
         this.ableToDefence = false; 
         this.isEmeny = true;
-        this.body.setSize(65, 75, true); // Adjust hitbox size
-        this.body.setOffset(5, 5);  
-        this.anims.create({
-            key: 'sunflowerFairy',
-            frames: [
-                { key: 'sunflowerFairy1' },
-                { key: 'sunflowerFairy2' },
-                { key: 'sunflowerFairy3' },
-            ],
-            frameRate: 10, // 10 frames per second
-            repeat: -1 // Loop infinitely
-        });
-        this.play('sunflowerFairy'); // Play the 'rumiaFly' animation
+        
+
     }
 
     update() {
-        this.x -= emenySpeed;
-        if(!this.isDrop){
-
-            // Move up/down based on direction
-            this.y += this.direction * this.speed;
-
-            // Reverse direction when hitting the bottom
-            if (this.y >= boardheigh - 60) {
-                this.direction = -1; // Move up
-            }
-
-            // Reverse direction when hitting the top
-            if (this.y <= 60) {
-                this.direction = 1; // Move down
-            }
-        }else{
-            this.y += 3
+        super.update();
+        if(this.isDrop)
+            return
+        if(this.behavior == 'r5_s5Fs6L_tL' ){
+            this.r5_s5Fs6L_tL();
         }
+                
         
-
-        // Destroy when off-screen
-        if (this.x < -100 || this.y > 700) {
-            this.destroy();
-        }
     }
+    
+    
+
+    r5_s5Fs6L_tL() {
+        if(this.step == 0 && this.moveTo(850)){
+            this.step += 1;
+            //fanShapedType_ToDirection(bulletType, num, angleStart, angleEnd, shooter, speed)
+            //fanShapedType_ToTarget(bulletType, num, target, offsetAngle, shooter, speed) 
+            for (let i = 0; i < 4; i++) {
+                this.scene.time.delayedCall(i * 30, () => {
+                    // ✅ Get a new bullet instance
+                    this.scene.shootingLogic.fanShapedType_ToDirection('blueMediumCircle', 5, 170, 190, this, 2);//shooting 
+                    
+                });
+            }
+            this.scene.time.delayedCall(400, () => this.step +=1, [], this);//step2
+        }
+
+        if(this.step == 2){
+            this.step +=1
+            this.scene.shootingLogic.fanShapedType_ToTarget('redMediumCircle', 5, rumia,10, this, 2);//shooting 
+            this.scene.time.delayedCall(2400, () => this.step +=1, [], this);//step2
+        }
+        if(this.step == 5){
+            this.exitScreen('AutoTB')
+        }
+
+    }
+
     dropOff(){
-        this.isDrop = true
         this.anims.stop();
         this.setTexture('sunflowerFairyHit');
+        super.dropOff();
         
-        this.scene.tweens.add({
-            targets: this,
-            angle: -360, 
-            duration: 1000, 
-            ease: 'Linear',
-            repeat: -1, 
-            onComplete: () => {
-                this.destroy(); // Remove the object after animation
-            }
-        });
     }
 }

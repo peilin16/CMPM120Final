@@ -10,6 +10,7 @@ class Load extends Phaser.Scene {
         this.load.image('rumiafly3', './assets/character/rumia-fly3.png');
         //hit
         this.load.image('rumiaflyhit', './assets/character/rumia-fly-hit.png');
+        this.load.image('rumiaflydown', './assets/character/rumia-fly-down.png');
         //defence
         this.load.image('rumiaDefence1', './assets/character/rumia-fly-defence1.png');
         this.load.image('rumiaDefence2', './assets/character/rumia-fly-defence2.png');
@@ -50,12 +51,21 @@ class Load extends Phaser.Scene {
         this.load.image('dandelionFairy2', './assets/character/DandelionFairy2.png');
         this.load.image('dandelionFairy3', './assets/character/DandelionFairy3.png');
         this.load.image('dandelionFairyHit', './assets/character/DandelionFairy-hit.png');
+        
         //bullet load
         this.load.image('blueSmallCircleBullet','./assets/img/blueSmallCircleBullet.png');
         this.load.image('blueMediumCircleBullet','./assets/img/blueMediumCircleBullet.png');
         this.load.image('blueLargeCircleBullet','./assets/img/blueLargeCircleBullet.png');
         
-        this.load.image('redCircleBullet','./assets/img/redCircleBullet.png');
+        this.load.image('redSmallCircleBullet','./assets/img/redSmallCircleBullet.png');
+        this.load.image('redMediumCircleBullet','./assets/img/redMediumCircleBullet.png');
+        this.load.image('redLargeCircleBullet','./assets/img/redLargeCircleBullet.png');
+
+        this.load.image('blueCapsuleBullet','./assets/img/blueCapsuleBullet.png');
+        this.load.image('redCapsuleBullet','./assets/img/redCapsuleBullet.png');
+
+        this.load.image('blueLongSemicircleBullet','./assets/img/blueLongSemicircleBullet.png');
+        this.load.image('redLongSemicircleBullet','./assets/img/redLongSemicircleBullet.png');
         this.load.image('bug','./assets/img/bug.png');
         //test load
         //this.load.image('test',  'https://labs.phaser.io/assets/sprites/phaser3-logo.png');
@@ -69,15 +79,15 @@ class Load extends Phaser.Scene {
         
         this.load.image('explosionTexture', './assets/img/explosionTexture1.png');
         
-
+        
     }
     create() {
 
         //alert('aaa')
         // check for local storage browser support
         // create anims rumia fly
-        shootingLogic = new stgShootingLogic();
-
+        //shootingLogic = new stgShootingLogic();
+        
         
         
         this.scene.start('titleScene');

@@ -13,8 +13,8 @@ class Character extends Phaser.GameObjects.Sprite {
         this.type = type; 
         this.ableToDefence = false; 
         this.behavior = '';
-        this.subtype = '';
-        this.speed = 3;
+        this.subType = '';
+        this.step = 0; // Prevents double shooting
         this.heigh = 0;
         this.width = 0;
         this.body.setImmovable(true); // ✅ Prevents movement from collisions
@@ -25,25 +25,28 @@ class Character extends Phaser.GameObjects.Sprite {
         this.body.setCollideWorldBounds(true);
     }
     update(){
-
+        
+        if(this.healthly <= 0){
+            this.dropOff();
+        }
+        
     }
     // Method to drop when hit
     dropOff() {
         this.isDrop = true;
+        this.y +=3
         this.scene.tweens.add({
             targets: this,
             angle: -360, 
             duration: 700, 
             ease: 'Linear',
             repeat: -1, 
-            onComplete: () => {
-                this.destroy(); // Remove the object after animation
-            }
+            
         });
-        
+        this.checkDestroy('bottom');
     }
     
-    
+
     // ✅ Check if the character should be destroyed when off-screen
     checkDestroy(board) {
         let screenWidth = game.config.width;
@@ -72,16 +75,80 @@ class Character extends Phaser.GameObjects.Sprite {
                 break;
         }
     }    
-
-
-    // Collision handling
-    collide(obj) {
-        if (!this.isDrop && obj.isEmeny !== this.isEmeny) {
-            this.dropOff();
+    exitScreen(key, speed = 2) { 
+        switch (key) {
+            case 'top':
+                this.y -= speed; // Move upwards
+                break;
+            case 'bottom':
+                this.y += speed; // Move downwards
+                break;
+            case 'left':
+                this.x -= speed; // Move left
+                break;
+            case 'right':
+                this.x += speed; // Move right
+                break;
+            case 'autoLR':
+                if (this.x < game.config.width / 2) {
+                    this.x -= speed; // Move left if closer to left
+                } else {
+                    this.x += speed; // Move right if closer to right
+                }
+                break;
+            case 'autoTB':
+                if (this.y < game.config.height / 2) {
+                    this.y -= speed; // Move up if closer to top
+                } else {
+                    this.y += speed; // Move down if closer to bottom
+                }
+                break;
         }
     }
-    collideToBullet(bullet){
+    moveTo(Xpos = -1, Ypos = -1, speed = 2) {
+        let reachedX = false;
+        let reachedY = false;
+    
+        // ✅ Move on the X-axis if Xpos is specified
+        if (Xpos !== -1) {
+            let directionX = Math.sign(Xpos - this.x); // ✅ Determine movement direction
+            if (Math.abs(this.x - Xpos) > speed) {
+                this.x += directionX * speed; // ✅ Move towards the target
+            } else {
+                this.x = Xpos;
+                reachedX = true;
+            }
+        } else {
+            reachedX = true; // ✅ Skip X check if not specified
+        }
+    
+        // ✅ Move on the Y-axis if Ypos is specified
+        if (Ypos !== -1) {
+            let directionY = Math.sign(Ypos - this.y); // ✅ Determine movement direction
+            if (Math.abs(this.y - Ypos) > speed) {
+                this.y += directionY * speed; // ✅ Move towards the target
+            } else {
+                this.y = Ypos;
+                reachedY = true;
+            }
+        } else {
+            reachedY = true; // ✅ Skip Y check if not specified
+        }
+    
+        return reachedX && reachedY; // ✅ Return true when both positions are reached
+    }
+    
+    // Collision handling
+    collide(obj) {
         
+    }
+    collideToBullet(bullet){
+        if(bullet.isReflected){
+            this.healthly -= bullet.atk;
+            if(this.healthly <= 0){
+                this.dropOff();
+            }
+        }
     } 
     // Movement logic (to be overridden)
     moving() {

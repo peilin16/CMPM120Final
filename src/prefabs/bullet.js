@@ -1,15 +1,20 @@
 class Bullet extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, target) {
-        super(scene, x, y, texture, target);
+    constructor(scene, x, y, texture,target,type= 'blueSmallCircleBullet') {
+        super(scene, x, y, texture);
 
         
         // Bullet properties
+        this.type =type
         this.speed = 5; // Default speed
         this.isRed = false; // If the bullet has been deflected
         this.target = target; // Target for homing bullets
         this.ableToReflect = true;
         this.shooter = null; // Who shoot this bullet
+        this.atk = 7;
         // Add to scene and enable physics
+        this.vx = 0;
+        this.vy = 0;
+
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.isReflected = false
@@ -27,38 +32,57 @@ class Bullet extends Phaser.GameObjects.Sprite {
             this.setTint(0x00ff00); // Change color to indicate deflection
         }
     }
-    // ✅ Reflect the bullet when hitting Rumia in defense mode
-    reflect(normalX = 0, normalY = -1) {
+
+    reflect(normalX = 0, normalY = -1, rate = 30) {
         if (!this.isReflected) {
             this.isReflected = true; // ✅ Mark as reflected
             this.setTint(0x00ff00); // ✅ Change color to indicate deflection
     
-            // Get current velocity
-            let velocityX = this.body.velocity.x;
-            let velocityY = this.body.velocity.y;
+            let randomChance = Phaser.Math.Between(0, 100);
     
-            // ✅ Calculate reflection vector using Phaser’s built-in physics vector
-            let normalVector = new Phaser.Math.Vector2(normalX, normalY).normalize();
-            let reflectedVelocity = new Phaser.Math.Vector2(velocityX, velocityY).reflect(normalVector);
-    
-            // ✅ Introduce a slight variation to the reflection angle
-            let angleVariation = Phaser.Math.Between(-15, 15); // Random angle variation in degrees
-            reflectedVelocity.rotate(Phaser.Math.DEG_TO_RAD * angleVariation); // ✅ Apply variation
-    
-            // ✅ Apply the new velocity after reflection
-            this.body.setVelocity(reflectedVelocity.x, reflectedVelocity.y);
-    
-            // ✅ Increase speed slightly after reflection
-            this.body.velocity.scale(1.2); // Makes the bullet move slightly faster
-    
-            // ✅ Ensure it doesn't collide with Rumia again
+            if (randomChance < rate) {
+                this.targetReflect(); // ✅ Target reflection
+            } else {
+                this.normalReflect(normalX, normalY); // ✅ Normal reflection
+            }
+
             this.scene.physics.world.colliders.getActive().forEach(collider => {
                 if (collider.object1 === this && collider.object2 === rumia) {
                     collider.destroy(); // ✅ Remove collider so Rumia isn't hit again
                 }
             });
+            this.target = this.shooter;
+            this.shooter = rumia;
         }
     }
+    
+
+
+    normalReflect(normalX = 0, normalY = -1) {
+        let normalVector = new Phaser.Math.Vector2(normalX, normalY).normalize();
+        let reflectedVelocity = new Phaser.Math.Vector2(this.vx, this.vy).reflect(normalVector);
+    
+        let angleVariation = Phaser.Math.Between(-10, 10); // ✅ Randomize reflection angle
+        reflectedVelocity.rotate(Phaser.Math.DEG_TO_RAD * angleVariation);
+    
+        this.vx = reflectedVelocity.x;
+        this.vy = reflectedVelocity.y;
+    }
+
+    targetReflect() {
+        if (!this.shooter) {
+            this.normalReflect(); // ✅ Default to normal reflection if no shooter exists
+            return;
+        }
+        
+        // ✅ Bounce back directly toward shooter
+        let direction = new Phaser.Math.Vector2(this.shooter.x - this.x, this.shooter.y - this.y).normalize();
+        this.vx = direction.x;
+        this.vy = direction.y;
+    }
+
+
+
 
     dropOff() {
         // Create explosion effect at the bullet's position
@@ -83,6 +107,8 @@ class Bullet extends Phaser.GameObjects.Sprite {
     
     // Update function to remove bullets when they go off-screen
     update() {
+        this.x +=this.vx * this.speed
+        this.y +=this.vy * this.speed
         this.checkDestory();
     }
     checkDestory(){

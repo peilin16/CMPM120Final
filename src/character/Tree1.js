@@ -12,7 +12,7 @@ class Tree1 extends Character {
     }
 
     update() {
-        this.x -= treeSpeed;
+        this.x += this.Xspeed;
         
         // Destroy tree when it moves off-screen
         if (this && this.x < -150) {

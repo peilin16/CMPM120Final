@@ -55,7 +55,7 @@ class Level1 extends Mainlevel {
         
         
         
-        this.time.addEvent({
+        /*this.time.addEvent({
             delay: 2000, // Fire every 2 seconds
             callback: () => {
                 if (rumia) {
@@ -66,7 +66,7 @@ class Level1 extends Mainlevel {
             },
             callbackScope: this,
             loop: true
-        });
+        });*/
         
         
 
@@ -76,8 +76,16 @@ class Level1 extends Mainlevel {
         
         this.current = 0;
         this.emenySpawn = [
+            this.emenySpawn4.bind(this),
             this.emenySpawn2.bind(this),
             this.emenySpawn1.bind(this),
+            
+            
+            
+            
+            
+            
+            //
             
             this.emenySpawn3.bind(this),
         ];
@@ -139,17 +147,23 @@ class Level1 extends Mainlevel {
         if (!this.isSprawn) {
             this.isSprawn = true;
             console.log("Wave 2 started!");
-            this.spawnEmeny(2, 'list', 'DivineSpirit','blue','r_shooting2_l'); // ✅ Spawns one DivineSpirit
+            this.spawnEmeny(4, 'list', 'DivineSpirit','blue','r_shooting2_l',200); // ✅ Spawns one DivineSpirit
         }
     }
     emenySpawn3() {
         if (!this.isSprawn) {
             this.isSprawn = true;
             console.log("Wave 3 started!");
-            super.spawnEmeny(5,'arrow','Kedama'); // ✅ Reuse same function to spawn new enemies
+            super.spawnEmeny(5,'arrow','Kedama'); // ✅BlueCircleBullet Reuse same function to spawn new enemies
         }
     }
-
+    emenySpawn4(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            console.log("Wave 4 started!");
+            super.spawnEmeny(2,'wideList','SunFlowerFairy','SunFlowerFairy','r5_s5Fs6L_tL',200); // ✅ Reuse same function to spawn new enemies
+        }
+    }
 
 
 
