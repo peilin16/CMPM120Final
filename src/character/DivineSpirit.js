@@ -48,8 +48,16 @@ class DivineSpirit extends Character {
         if(this.isDrop){
             return
         }
-        if(this.behavior == 'r_shooting2_l'){
-            this.r_shooting2_l();
+        switch(this.behavior){
+            case 'r_shooting2_l':
+                this.r_shooting2_l();
+                break;
+            case 'r_sbl1_srl1_srl1_tb':
+                this.r_sbl1_srl1_srl1_tb();
+                break;
+            case 'r_sr4_tb':
+                this.r_sr4_tb();
+                break; 
         }
 
     }
@@ -58,12 +66,42 @@ class DivineSpirit extends Character {
     r_shooting2_l() {
         if (this.step == 0 && this.moveTo(850,-1,2)){
             this.step +=1
-            this.scene.shootingLogic.listType_ToTarget('blueMediumCircle', 5, 200, this, rumia,2);
-            this.scene.time.delayedCall(2400, () => this.step +=1, [], this);//step2
+            this.scene.shootingLogic.listType_ToTarget('blueMediumCircle', 5, 200, this, rumia,3);
+            this.scene.time.delayedCall(4400, () => this.step +=1, [], this);//step2
         } 
         if(this.step == 2){
-            this.exitScreen('autoTB')
+            this.step +=1;
+            this.scene.shootingLogic.listType_ToTarget('redMediumCircle', 2, 300, this, rumia,3);
+            this.scene.time.delayedCall(3400, () => this.step +=1, [], this);//step2
         }
+        if(this.step == 4){
+            this.exitScreen('autoTB', 1.5, -0.7)
+        }
+    }
+    
+    r_sbl1_srl1_srl1_tb(){
+        if(this.step == 0 && this.moveTo(900,-1,1.8)){
+            this.step +=1
+            this.scene.shootingLogic.listType_ToTarget('blueMediumCircle', 1, 200, this, rumia,4);
+        }else if(this.step == 1 && this.moveTo(850,-1,1.8)){
+            this.step +=1
+            this.scene.shootingLogic.listType_ToTarget('redMediumCircle', 1, 200, this, rumia,4);
+        }else if(this.step == 2 && this.moveTo(700,-1,1.8)){
+            this.step +=1
+            this.scene.shootingLogic.listType_ToTarget('blueMediumCircle', 1, 200, this, rumia,4);
+        }else if(this.step == 3 && this.moveTo(630,-1,1.8)){
+            this.step +=1
+            this.scene.shootingLogic.listType_ToTarget('redMediumCircle', 1, 200, this, rumia,4);
+        }else if(this.step == 4 && this.moveTo(540,-1,1.8)){
+            this.step +=1
+            this.scene.shootingLogic.listType_ToTarget('blueMediumCircle', 1, 200, this, rumia,4);
+        }else if(this.step == 5){
+            this.exitScreen('autoTB',1.8 , -1);
+        }
+    }
+    //fanType 360
+    r_sr4_tb(){
+        
     }
     collide(){
         this.healthly -=5

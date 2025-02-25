@@ -28,7 +28,7 @@ class LongSemicircleBullet extends Bullet {
             this.ableToReflect = false;
         }
     }
-
+    
     moving() {
         if (this.target) {
             this.scene.physics.moveToObject(this, this.target, this.speed);

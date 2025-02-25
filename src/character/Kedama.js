@@ -1,8 +1,8 @@
 
 
 class Kedama extends Character{
-    constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture,'Kedama', frame)
+    constructor(scene, x, y, type, frame) {
+        super(scene, x, y, 'Kedama','Kedama', frame)
         
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -21,11 +21,15 @@ class Kedama extends Character{
 
     update() {
         //super.update();
-
-        if(!this.isDrop)
-            this.moving();
         if(this.healthly <= 0){
             this.dropOff();
+        }
+        if(!this.isDrop){
+            if(this.behavior == 'l2'){
+                this.l2();
+            }else if(this.behavior == 'hp_3o6'){
+                this.hp_3o6();
+            }
         }
     }
     dropOff(){
@@ -34,9 +38,18 @@ class Kedama extends Character{
         super.dropOff();
     }
 
-    moving(){
-       this.exitScreen('left',2)
+    l2(){
+        this.exitScreen('left',2)
     }
+    hp_3o6(){
+        if(this.step == 0) {
+            if(this.moveToTarget(rumia,4.5,0 ) || rumia.isDrop || rumia.isHit)
+                this.step +=1
+        }
+        if(this.step == 1)
+            this.exitScreen('left')
+    }
+
     
     collide(obj) {
         if(obj.type == 'player'){

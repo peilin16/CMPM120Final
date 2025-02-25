@@ -29,8 +29,8 @@ class Load extends Phaser.Scene {
         //pill load
         this.load.image('Kedama', './assets/img/Pill.png');
         this.load.image('KedamaHit', './assets/img/Pill-hit.png');
-        this.load.image('Kedama', './assets/img/PillRed.png');
-        this.load.image('KedamaHit', './assets/img/PillRed-Hit.png');
+        this.load.image('KedamaRed', './assets/img/PillRed.png');
+        this.load.image('KedamaRedHit', './assets/img/PillRed-Hit.png');
         //DivineSpiritBlue
         this.load.image('DivineSpiritBlue1', './assets/character/DivineSpiritBlue1.png');
         this.load.image('DivineSpiritBlue2', './assets/character/DivineSpiritBlue2.png');
@@ -41,6 +41,10 @@ class Load extends Phaser.Scene {
         this.load.image('DaiyouseiNothing2', './assets/character/Daiyousei-nothing2.png');
         this.load.image('DaiyouseiScore1', './assets/character/Daiyousei-score1.png');
         this.load.image('DaiyouseiScore2', './assets/character/Daiyousei-score2.png');
+
+        
+
+
         //flower fairy load
         this.load.image('sunflowerFairy1', './assets/character/sunflowerFairy1.png');
         this.load.image('sunflowerFairy2', './assets/character/sunflowerFairy2.png');
@@ -51,7 +55,23 @@ class Load extends Phaser.Scene {
         this.load.image('dandelionFairy2', './assets/character/DandelionFairy2.png');
         this.load.image('dandelionFairy3', './assets/character/DandelionFairy3.png');
         this.load.image('dandelionFairyHit', './assets/character/DandelionFairy-hit.png');
-        
+        //maid fairy load
+        this.load.image('MaidFairy1_1', './assets/character/MaidFairy1.png');
+        this.load.image('MaidFairy1_2', './assets/character/MaidFairy2.png');
+        this.load.image('MaidFairy1_3', './assets/character/MaidFairy3.png');
+        this.load.image('MaidFairy1_Hit', './assets/character/MaidFairy1Hit.png');
+
+        this.load.image('MaidFairy2_1', './assets/character/MaidFairy2_1.png');
+        this.load.image('MaidFairy2_2', './assets/character/MaidFairy2_2.png');
+        this.load.image('MaidFairy2_3', './assets/character/MaidFairy2_3.png');
+        this.load.image('MaidFairy2_Hit', './assets/character/MaidFairy2_Hit.png');
+
+
+        //boss load
+        this.load.image('Wriggle1', './assets/character/Wriggle1.png');
+        this.load.image('Wriggle2', './assets/character/Wriggle2.png');
+        this.load.image('Wriggle3', './assets/character/Wriggle3.png');
+
         //bullet load
         this.load.image('blueSmallCircleBullet','./assets/img/blueSmallCircleBullet.png');
         this.load.image('blueMediumCircleBullet','./assets/img/blueMediumCircleBullet.png');
@@ -67,14 +87,16 @@ class Load extends Phaser.Scene {
         this.load.image('blueLongSemicircleBullet','./assets/img/blueLongSemicircleBullet.png');
         this.load.image('redLongSemicircleBullet','./assets/img/redLongSemicircleBullet.png');
         this.load.image('bug','./assets/img/bug.png');
+        //element load
+        this.load.image('bug','./assets/img/score.png');
         //test load
         //this.load.image('test',  'https://labs.phaser.io/assets/sprites/phaser3-logo.png');
 
         
-        this.load.audio('hitHurt1', './assets/audio/hitHurt1.wav')
-        this.load.audio('hitHurt2', './assets/audio/hitHurt2.wav')
-        this.load.audio('hitHurt3', './assets/audio/hitHurt3.wav')
-        this.load.audio('pickUp1', './assets/audio/pickupCoin.wav')
+        this.load.audio('hitHurt1', './assets/audio/hitHurt1.wav');
+        this.load.audio('hitHurt2', './assets/audio/hitHurt2.wav');
+        this.load.audio('hitHurt3', './assets/audio/hitHurt3.wav');
+        this.load.audio('pickUp1', './assets/audio/pickupCoin.wav');
         this.load.audio('background', './assets/audio/background1.wav');
         
         this.load.image('explosionTexture', './assets/img/explosionTexture1.png');

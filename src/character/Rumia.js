@@ -14,14 +14,14 @@ class Rumia extends Character{
         this.collideCircleRadiusOffset = [30,14]
         this.Xspeed = 0;
         this.unableDefence = 0;
-
+        
         this.isHit = false;
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.body.setCollideWorldBounds(true);
-        this.body.setCircle(22); // ✅ Set a circular hitbox with radius 25
+        this.body.setCircle(data.getData('rumia_circle')); // ✅ Set a circular hitbox with radius 25
         //this.body.setSize(25, 25); // ✅ Adjust width/height to fit the oval shape
-        this.body.setOffset(30, 14);
+        this.body.setOffset(45, 24);
         // ✅ Create countdown text (initially hidden)
         this.defenseCountdownText = scene.add.text(this.x, this.y - 40, '', {
             fontSize: '18px',
@@ -181,8 +181,8 @@ class Rumia extends Character{
         this.isSpecialanimePlaying = true;
         //alert('aaa')
         this.isdefence = false;
-        this.body.setCircle(22);  // Reset collider size
-        this.body.setOffset(30, 14); // Reset offset
+        this.body.setCircle(data.getData('rumia_circle'));  // Reset collider size
+        this.body.setOffset(45, 24); // Reset offset
         this.once('animationcomplete', () => {
             this.setTexture('rumiafly1'); // Reset to normal state
             this.isSpecialanimePlaying = false;

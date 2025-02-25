@@ -1,4 +1,4 @@
-class CapsuleBullet extends Bullet {
+class Bug extends Character {
     constructor(scene, x, y, target, speed = 2, subtype = 'bc') {
         let texture = '';
         let bulletType = '';

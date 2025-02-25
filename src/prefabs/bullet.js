@@ -14,6 +14,11 @@ class Bullet extends Phaser.GameObjects.Sprite {
         // Add to scene and enable physics
         this.vx = 0;
         this.vy = 0;
+        //if rotate
+        this.isTwirl = false;
+        //toward
+        //this.orientationX = 0;
+        //this.orientationY = 0;
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -32,7 +37,9 @@ class Bullet extends Phaser.GameObjects.Sprite {
             this.setTint(0x00ff00); // Change color to indicate deflection
         }
     }
-
+    setOrientation( oX, oY){
+        this.rotation = Phaser.Math.Angle.Between(0, 0, oX, oY);
+    }
     reflect(normalX = 0, normalY = -1, rate = 30) {
         if (!this.isReflected) {
             this.isReflected = true; // ✅ Mark as reflected
@@ -86,6 +93,7 @@ class Bullet extends Phaser.GameObjects.Sprite {
 
     dropOff() {
         // Create explosion effect at the bullet's position
+        /*
         let explosionEmitter = this.scene.add.particles('explosionTexture').createEmitter({
             x: this.x,
             y: this.y,
@@ -100,7 +108,7 @@ class Bullet extends Phaser.GameObjects.Sprite {
         this.scene.time.delayedCall(600, () => {
             explosionEmitter.stop();  
             explosionEmitter.manager.emitters.remove(explosionEmitter);  
-        });
+        });*/
         this.destroy();
     }
 

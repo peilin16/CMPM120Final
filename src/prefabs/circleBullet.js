@@ -32,7 +32,7 @@ class CircleBullet extends Bullet {
         this.setDepth(10); // Ensure bullets are on top
         
     }
-
+    
     moving() {
         //alert(super.target.x)
         if (this.target) {
