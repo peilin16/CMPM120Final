@@ -5,7 +5,7 @@ class Character extends Phaser.GameObjects.Sprite {
         // Add to scene and enable physics
         scene.add.existing(this);
         scene.physics.add.existing(this);
-
+        this.score = 3;
         // Default properties for all characters
         this.healthly = 3; 
         this.isEmeny = false; 
@@ -19,7 +19,7 @@ class Character extends Phaser.GameObjects.Sprite {
         this.width = 0;
         this.body.setImmovable(true); // ✅ Prevents movement from collisions
         this.body.setVelocity(0, 0);  // ✅ Ensures Rumia stays in place
-
+        this.scoreFlag = false;
         // Adjust hitbox
         this.body.setSize(50, 50);
         this.body.setCollideWorldBounds(true);
@@ -29,11 +29,12 @@ class Character extends Phaser.GameObjects.Sprite {
         if(this.healthly <= 0){
             this.dropOff();
         }
-        
+        this.sprawnScore();
     }
     // Method to drop when hit
     dropOff(duration = 700,yspeed = 3 , xspeed = 0) {
         this.isDrop = true;
+        
         this.y +=yspeed
         this.scene.tweens.add({
             targets: this,
@@ -43,6 +44,7 @@ class Character extends Phaser.GameObjects.Sprite {
             repeat: -1, 
             
         });
+        
         this.checkDestroy('bottom');
     }
     
@@ -55,27 +57,39 @@ class Character extends Phaser.GameObjects.Sprite {
         switch (board) {
             case 'top':
                 if (this.y < -150) {
-                    this.destroy();
+                    this.destoryCharacter();
                 }
                 break;
             case 'bottom':
                 if (this.y > screenHeight + 150) {
-                    this.destroy();
+                    this.destoryCharacter();
                 }
                 break;
             case 'left':
                 if (this.x < -150) {
-                    this.destroy();
+                    this.destoryCharacter();
                 }
                 break;
             case 'right':
                 if (this.x > screenWidth + 150) {
-                    this.destroy();
+                    this.destoryCharacter();
                 }
                 break;
-            
         }
     }    
+    destoryCharacter(){
+        if (this.collider) {
+            this.collider.destroy(); // ✅ Remove collider from physics world
+            this.collider = null;    // ✅ Avoid referencing it again
+        }
+        if (this.scene && this.scene.EmenyGroup) {
+            this.scene.EmenyGroup.remove(this, true, true); // ✅ Remove from bullet group
+        }
+        this.setActive(false);  // ✅ Remove from update loop
+        this.setVisible(false); // ✅ Hide the bullet
+        //this.body.enable = false; // ✅ Disable physics body
+        this.destroy();
+    }
     exitScreen(key, speed = 2,sec_speed = 0) { 
         switch (key) {
             case 'top':
@@ -182,6 +196,28 @@ class Character extends Phaser.GameObjects.Sprite {
     collide(obj) {
         
     }
+    sprawnScore() {
+        /*if (!this.scoreFlag && this.isEmeny && this.isDrop) {
+            this.scoreFlag = true; // ✅ Prevent multiple spawns
+            
+            for (let i = 0; i < this.score; i++) {
+                let offsetX = Phaser.Math.Between(-30, 30); // ✅ Small random offset
+                let offsetY = Phaser.Math.Between(-30, 30);
+    
+                let scoreObj = new Score(this.scene, this.x + offsetX, this.y + offsetY);
+                scoreObj.target = rumia; // ✅ Make the score move to the player
+                this.scene.EmenyGroup.add(scoreObj);
+    
+                this.scene.physics.add.overlap(rumia, scoreObj, (rumia, scoreObj) => {
+                    
+                    this.scene.handleCollision(rumia, scoreObj);
+                    
+                });
+            }
+        }*/
+    }
+
+
     collideToBullet(bullet){
         if(bullet.isReflected){
             this.healthly -= bullet.atk;

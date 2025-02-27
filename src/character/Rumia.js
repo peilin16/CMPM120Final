@@ -1,12 +1,12 @@
 class Rumia extends Character{
     
     constructor(scene, x, y,  frame) {
-        super(scene, x, y, 'rumiafly1','player', frame)
+        super(scene, x, y, 'rumiafly1','Rumia', frame)
         
-        this.healthly = 3; 
-        this.speed = 3.5;
+        this.healthly = 100; 
+        this.speed = data.getData('rumia_speed_Normal');
         this.boomber = 0;
-        this.score = 0;
+        this.Playerscore = 0;
         this.ableToDefence = true; 
         this.isdefence = false;
         this.isSpecialanimePlaying = false;
@@ -124,18 +124,18 @@ class Rumia extends Character{
             }
         
         
-        /*if (!keyShift.isDown) {
-            this.speed = this.Speed
-        }
-        if (keyShift.isDown) {
-            this.speed = this.Speed + 2
-        }*/
+            if (!keyShift.isDown) {
+                this.speed =  data.getData('rumia_speed_Normal');
+            }
+            if (keyShift.isDown) {
+                this.speed =  data.getData('rumia_speed_Slow');
+            }
         
        
         // ✅ Prevent entering defense mode if unableDefence > 0
-        if (keyK.isDown && this.isdefence === false && this.isSpecialanimePlaying === false && this.unableDefence <= 0) {
+        if (keyK.isDown && this.isdefence === false &&this.isSpecialanimePlaying == false  && this.unableDefence <= 0) {
             this.enterDefenseMode();
-        } else if (!keyK.isDown && this.isdefence === true && this.isSpecialanimePlaying === false) {
+        } else if (!keyK.isDown && this.isdefence === true ) {
             this.endDefenseMode();
         }
         
@@ -174,18 +174,19 @@ class Rumia extends Character{
             this.body.setCircle(52);  // Reset collider size
             this.body.setOffset(4, 3); // Reset offset
         });
+        this.scene.time.delayedCall(400, () => this.isSpecialanimePlaying = false, [], this);//step2
     }
     
     endDefenseMode() {
         this.anims.play('rumiaDefenceEnd'); // Play defense exit animation
-        this.isSpecialanimePlaying = true;
+        this.isSpecialanimePlaying = false;
         //alert('aaa')
         this.isdefence = false;
         this.body.setCircle(data.getData('rumia_circle'));  // Reset collider size
         this.body.setOffset(45, 24); // Reset offset
         this.once('animationcomplete', () => {
             this.setTexture('rumiafly1'); // Reset to normal state
-            this.isSpecialanimePlaying = false;
+            //this.isSpecialanimePlaying = false;
             
             this.play('rumiaFly');
                 // ✅ Restore normal attack range
@@ -208,6 +209,11 @@ class Rumia extends Character{
                 if (hitSound) hitSound.play();
                 if(this.isdefence && obj.type == 'Kedama'){
                     return;
+                }else if(this.isdefence || this.unableDefence == 3){
+                    this.endDefenseMode();
+                    this.unableDefence = 3;
+                    this.notDefenceState();
+                    return
                 }
                 this.isSpecialanimePlaying = true;
                 this.isHit = true;
