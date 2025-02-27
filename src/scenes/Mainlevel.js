@@ -7,7 +7,7 @@ class Mainlevel extends Phaser.Scene {
         this.isSprawn = false;//sprawn flag
         //level = 0;
         // define keys    
-        
+        this.physics.world.setFPS(120);
         this.installShootingLogic(); // ✅ Attach shooting logic to this scene
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -37,7 +37,7 @@ class Mainlevel extends Phaser.Scene {
             fixedWidth: 100
         }
         this.RumiahealthText = this.add.text(50, 20, '[H]:'+rumia.healthly, this.scoreConfig).setOrigin(0.5)
-        this.CurrentScoreText = this.add.text(50, 40, '[P]:'+ score, this.scoreConfig).setOrigin(0.5);
+        this.CurrentScoreText = this.add.text(50, 40, '[S]:'+ rumia.Playerscore, this.scoreConfig).setOrigin(0.5);
 
         this.anims.create({
             key: 'explodeAnim',
@@ -47,13 +47,38 @@ class Mainlevel extends Phaser.Scene {
         });
         // ✅ Boss Health Bar UI (Centered at the bottom)
         //this.bossHealthBarBG = this.add.rectangle(boardwidth / 2 , boardheigh - 20, 500, 20, 0x000000)//.setOrigin(0.5, 0.5);
-        this.bossHealthBar = this.add.rectangle(boardwidth / 2 , boardheigh - 20, 600, 20, 0xffffff)//.setOrigin(0.5, 0.5);
-        //this.bossHealthBarBG.setVisible(false);
+        this.bossHealthBar = this.add.rectangle(boardwidth / 2 , boardheigh - 20, 500, 20, 0xffffff)//.setOrigin(0.5, 0.5);
+        this.bossHealthTotal = 0;;
         this.bossHealthBar.setVisible(false);
     
         this.boss = null; // ✅ Store the boss reference
     
-        //add collider with help
+            // Create Dialogue Box
+        this.dialogueBox = this.add.rectangle(boardwidth / 2, boardheigh - 100, boardwidth - 200, 120, 0x000000, 0.7);
+        this.dialogueText = this.add.text(boardwidth / 2 - 350, boardheigh - 125, '', {
+            fontSize: '24px',
+            color: '#ffffff',
+            wordWrap: { width: boardwidth - 250 }
+        });
+        this.speakerText = this.add.text(boardwidth / 2 - 350, boardheigh - 160, '', {
+            fontSize: '28px',
+            color: '#ffcc00',
+            fontStyle: 'bold'
+        });
+
+        this.dialogueBox.setVisible(false);
+        this.dialogueText.setVisible(false);
+        this.speakerText.setVisible(false);
+
+        this.dialogueIndex = 0;
+        this.isSpeech = false;
+        
+        // Spacebar Input to Continue Dialogue
+        this.input.keyboard.on('keydown-SPACE', () => {
+            if (this.isSpeech) {
+                this.nextDialogue();
+            }
+        });
 
     }
 
@@ -66,20 +91,90 @@ class Mainlevel extends Phaser.Scene {
         // update bullet
         this.bulletGroup.children.iterate(bullet => {
             if (bullet && typeof bullet.update === 'function') {
-                bullet.update(); // Safely update each tree
+                bullet.update(this.time.now, this.game.loop.delta); // Safely update each tree
             }
         });
         if (this.boss) {
-            let healthPercent = Math.max(this.boss.healthly /600, 0); // ✅ Normalize health (0-1)
-    
-            // ✅ Update health bar width dynamically
-            let newWidth = 400 * healthPercent; // ✅ Scale width based on health
+            // 计算血量百分比（0到1之间）
+            let healthPercent = Math.max(this.boss.healthly / this.bossHealthTotal, 0); // ✅ Normalize health (0-1)
+            
+            // 根据血量百分比计算血条宽度
+            let newWidth = 500 * healthPercent; // ✅ Scale width based on health
+            
+            // 更新血条宽度
             this.bossHealthBar.setSize(newWidth, 20);
             
-            // ✅ Keep the health bar centered
-            this.bossHealthBar.x = boardwidth / 2 - 200 + (newWidth / 2);
+            // ✅ Keep the health bar centered (如果需要居中)
+            // this.bossHealthBar.x = boardwidth / 2 - 200 + (newWidth / 2);
         }
     }
+
+    startDialogue(playerName, playerSpeech, bossName, bossSpeech) {
+        this.isSpeech = true; // ✅ Pause the game
+        this.playerName = playerName;
+        this.bossName = bossName;
+        this.playerSpeech = playerSpeech;
+        this.bossSpeech = bossSpeech;
+        this.dialogueIndex = 0;
+    
+        // ✅ Show UI Elements
+        this.dialogueBox.setVisible(true);
+        this.dialogueText.setVisible(true);
+        this.speakerText.setVisible(true);
+    
+        this.nextDialogue(); // ✅ Start first dialogue line
+    }
+    
+    nextDialogue() {
+        // ✅ If both characters have dialogue, alternate turns
+        if (this.playerSpeech.length > 0 && this.bossSpeech.length > 0) {
+            if (this.dialogueIndex % 2 === 0) {
+                // ✅ Player's Turn
+                if (this.dialogueIndex / 2 < this.playerSpeech.length) {
+                    this.speakerText.setText(this.playerName);
+                    this.dialogueText.setText(this.playerSpeech[Math.floor(this.dialogueIndex / 2)]);
+                    this.dialogueIndex++;
+                    return;
+                }
+            } else {
+                // ✅ Boss's Turn
+                if (Math.floor(this.dialogueIndex / 2) < this.bossSpeech.length) {
+                    this.speakerText.setText(this.bossName);
+                    this.dialogueText.setText(this.bossSpeech[Math.floor(this.dialogueIndex / 2)]);
+                    this.dialogueIndex++;
+                    return;
+                }
+            }
+        } 
+        // ✅ If only the player has dialogue, show only the player’s speech
+        else if (this.playerSpeech.length > 0) {
+            if (this.dialogueIndex < this.playerSpeech.length) {
+                this.speakerText.setText(this.playerName);
+                this.dialogueText.setText(this.playerSpeech[this.dialogueIndex]);
+                this.dialogueIndex++;
+                return;
+            }
+        } 
+        // ✅ If only the boss has dialogue, show only the boss’s speech
+        else if (this.bossSpeech.length > 0) {
+            if (this.dialogueIndex < this.bossSpeech.length) {
+                this.speakerText.setText(this.bossName);
+                this.dialogueText.setText(this.bossSpeech[this.dialogueIndex]);
+                this.dialogueIndex++;
+                return;
+            }
+        }
+    
+        // ✅ End dialogue and resume game when both lists are finished
+        this.isSpeech = false;
+        this.dialogueBox.setVisible(false);
+        this.dialogueText.setVisible(false);
+        this.speakerText.setVisible(false);
+    }
+
+
+
+
     //game over
     gameOver(){
         rumia.dropOff();
@@ -116,31 +211,16 @@ class Mainlevel extends Phaser.Scene {
         }
         return true; // Valid position
     }
-    getReflection(bullet,normalVectorX,normalVectorY){
-        let rate = 40;
-        /*switch(bullet.type){
-            case 'blueSmallCircleBullet':
-                rate = 40;
-                break;
-            case 'blueMediumCircleBullet':
-                rate = 40;
-                break;
-            case 'blueLargeCircleBullet':
-                rate = 40;
-                break;    
-        }*/
-        bullet.reflect(normalVectorX, normalVectorY,rate);
-        return bullet;
-    }
+
     //bullet collision
     bulletCollision(obj, bullet){
         if(!obj.isDrop){
-            if(obj.type == 'player'){
+            if(obj.type == 'Rumia'){
                 if(!obj.isHit  && !bullet.isReflected ){
                     if (obj.isdefence ) { // ✅ Reflect the bullet when defending
                         if(bullet.isRed && rumia.unableDefence <= 0){
                             rumia.endDefenseMode();
-                            rumia.unableDefence = 4;
+                            rumia.unableDefence = 3;
                             rumia.notDefenceState();
                             bullet.dropOff();
                             return;
@@ -158,18 +238,16 @@ class Mainlevel extends Phaser.Scene {
                 
                         let normalVector = new Phaser.Math.Vector2(normalX, normalY).normalize();
                 
-                        //bullet.reflect(normalVector.x, normalVector.y);
-                        bullet = this.getReflection(bullet,normalVector.x, normalVector.y );
-
+                        this.reflect(bullet,normalVector.x, normalVector.y);
+                        
+                        //this.reflect(bullet);
                         //.children.iterate(emeny => {
-                        this.physics.add.collider(this.EmenyGroup, bullet, (reflectedBullet,enemy ) => {
-                            this.bulletCollision(enemy, reflectedBullet);
-                        });
+                        
                         //});
                         
                         return
                     }
-                    else if(rumia.unableDefence == 4)
+                    else if(rumia.unableDefence == 3)
                     {
                         bullet.dropOff();
                         return;
@@ -202,103 +280,121 @@ class Mainlevel extends Phaser.Scene {
         this.CurrentScoreText.setText('[P]:'+rumia.score);
         //rumia.isHit = true;
     }
-
-    spawnEmeny(num, type, Emeny, subtype = '', behavior = '', startY = boardheigh / 2, startX = game.config.width + 120) {
+    DelayXspawnEmeny(numY, type, Emeny, subtype = '', behavior = '', startY = boardheigh / 2, startX = game.config.width + 120 ,numX = 1 , sprateMin = 1){
+        for (let i = 0; i < numX; i++) {
+            this.time.delayedCall(sprateMin, () =>{
+                spawnEmeny(numY, type, Emeny, subtype , behavior, startY , startX )
+            } , [], this);//step2
+        }
+    }
+    spawnEmeny(numY, type, Emeny, subtype = '', behavior = '', startY = boardheigh / 2, startX = game.config.width + 120 ) {
         let positionList = [];
         let emeny;
         let spacing;
         
         let data = new dataRecord(); // ✅ Access enemy sizes
         let enemyWidth, enemyHeight;
-    
-        switch (Emeny) {
-            case 'Kedama':
-                enemyWidth = data.getData('kedama_width');
-                enemyHeight = data.getData('kedama_height');
-                break;
-            case 'DivineSpirit':
-                enemyWidth = data.getData('blueDivineSpirit_width');
-                enemyHeight = data.getData('blueDivineSpirit_height');
-                break;
-            case 'SunFlowerFairy':
-                enemyWidth = data.getData('sunflowerFairy_width');
-                enemyHeight = data.getData('sunflowerFairy_height');
-                break;
-            case 'MaidFairy':
-                enemyWidth = data.getData('MaidFairy1_width');
-                enemyHeight = data.getData('MaidFairy1_height');
-                break;
-            case 'Wriggle':
-                enemyWidth = data.getData('Wriggle_width');
-                enemyHeight = data.getData('Wriggle_height');
-                break;
-            default:
-                console.warn(`Unknown enemy type: ${Emeny}`);
-                return;
-        }
-        startY -= enemyHeight/2
-        startX -= enemyWidth /2
-        spacing = enemyWidth; // ✅ Default spacing is 1 body length
-    
-        for (let i = 0; i < num; i++) {
-            let posX = startX;
-            let posY = startY;
-    
-            switch (type) {
-                case 'list': // ✅ Keep a vertical distance of 1 body length
-                    posY = startY + (i * enemyHeight) ;
-                    if(i > 0){
-                        posY += i*enemyHeight
-                    }
-                    break;
-                case 'random_list': // ✅ Randomize vertical position while keeping spacing
-                    do {
-                        posY = Phaser.Math.Between(60, boardheigh - 60);
-                    } while (positionList.some(y => Math.abs(y - posY) < enemyHeight));
-                    break;
-                case 'arrow': // ✅ Arrange in arrow shape, spacing vertically and diagonally
-                    posY = startY + (i % 2 === 0 ? i * enemyHeight : -i * enemyHeight) + 60;
-                    posX = startX - (i * spacing / 2) - 60;
-                    break;
-                case 'diagonal': // ✅ Arrange diagonally with 1 body length spacing
-                    posY = 30 + startY + i * enemyHeight;
-                    posX = startX - i * spacing - 30;
-                    break;
-                case 'wideList': // ✅ Arrange in a wide list with 2 body length spacing
-                    posY = startY + (i * enemyHeight) ;
-                    if(i > 0){
-                        posY += 2* i * enemyHeight
-                    }
-                    break;
-            }
-            
-            //  Create the enemy instance
-            emeny = this.setEmeny(Emeny, posX, posY, subtype);
-
-            emeny.subType = subtype;
-            emeny.behavior = behavior;
-    
-            // ✅ Ensure spacing is maintained
-            positionList.push(posY);
-    
-            // ✅ Add collision with Rumia
-            this.physics.add.overlap(rumia, emeny, (rumia, emeny) => {
-                if (!rumia.isHit) {
-                    this.handleCollision(rumia, emeny);
-                }
-            });
-            //add bullet collider
-            this.bulletGroup.children.iterate(bullet => {
-                if (bullet.isReflected) {
-                    this.physics.add.collider(emeny, bullet, (enemy, reflectedBullet) => {
-                        this.bulletCollision(enemy, reflectedBullet);
-                    });
-                }
-            });
-            this.EmenyGroup.add(emeny);
-        }
         
+                switch (Emeny) {
+                    case 'Kedama':
+                        enemyWidth = data.getData('kedama_width');
+                        enemyHeight = data.getData('kedama_height');
+                        break;
+                    case 'DivineSpirit':
+                        enemyWidth = data.getData('blueDivineSpirit_width');
+                        enemyHeight = data.getData('blueDivineSpirit_height');
+                        break;
+                    case 'SunFlowerFairy':
+                        enemyWidth = data.getData('sunflowerFairy_width');
+                        enemyHeight = data.getData('sunflowerFairy_height');
+                        break;
+                    case 'MaidFairy':
+                        enemyWidth = data.getData('MaidFairy1_width');
+                        enemyHeight = data.getData('MaidFairy1_height');
+                        break;
+                    case 'Wriggle':
+                        enemyWidth = data.getData('Wriggle_width');
+                        enemyHeight = data.getData('Wriggle_height');
+                        break;
+                    case 'Daiyousei':
+                        enemyWidth = data.getData('Daiyousei_width');
+                        enemyHeight = data.getData('Daiyousei_height');
+                        break;
+                    case 'Crino':
+                        enemyWidth = data.getData('Crino_width');
+                        enemyHeight = data.getData('Crino_height');
+                        break;
+                    case 'DestructionIce':
+                        enemyWidth = data.getData('Crino_width');
+                        enemyHeight = data.getData('Crino_height');
+                        break;
+                    default:
+                        enemyWidth = 50;
+                        enemyHeight = 50;
+                }
+                startY -= enemyHeight/2
+                startX -= enemyWidth /2
+                spacing = enemyWidth; // ✅ Default spacing is 1 body length
+            
+                for (let i = 0; i < numY; i++) {
+                    let posX = startX;
+                    let posY = startY;
+            
+                    switch (type) {
+                        case 'list': // ✅ Keep a vertical distance of 1 body length
+                            posY = startY + (i * enemyHeight) ;
+                            if(i > 0){
+                                posY += i*enemyHeight
+                            }
+                            break;
+                        case 'random_list': // ✅ Randomize vertical position while keeping spacing
+                            do {
+                                posY = Phaser.Math.Between(60, boardheigh - 60);
+                            } while (positionList.some(y => Math.abs(y - posY) < enemyHeight));
+                            break;
+                        case 'arrow': // ✅ Arrange in arrow shape, spacing vertically and diagonally
+                            posY = startY + (i % 2 === 0 ? i * enemyHeight : -i * enemyHeight) + 60;
+                            posX = startX - (i * spacing / 2) - 60;
+                            break;
+                        case 'diagonal': // ✅ Arrange diagonally with 1 body length spacing
+                            posY = 30 + startY + i * enemyHeight;
+                            posX = startX - i * spacing - 30;
+                            break;
+                        case 'wideList': // ✅ Arrange in a wide list with 2 body length spacing
+                            posY = startY + (i * enemyHeight) ;
+                            if(i > 0){
+                                posY += 2* i * enemyHeight
+                            }
+                            break;
+                    }
+                    
+                    //  Create the enemy instance
+                    emeny = this.setEmeny(Emeny, posX, posY, subtype);
+        
+                    emeny.subType = subtype;
+                    emeny.behavior = behavior;
+            
+                    // ✅ Ensure spacing is maintained
+                    positionList.push(posY);
+            
+                    // ✅ Add collision with Rumia
+                    this.physics.add.overlap(rumia, emeny, (rumia, emeny) => {
+                        if (!rumia.isHit) {
+                            this.handleCollision(rumia, emeny);
+                        }
+                    });
+                    //add bullet collider
+                    this.bulletGroup.children.iterate(bullet => {
+                        if (bullet.isReflected) {
+                            this.physics.add.collider(emeny, bullet, (enemy, reflectedBullet) => {
+                                this.bulletCollision(enemy, reflectedBullet);
+                            });
+                        }
+                    });
+                    this.EmenyGroup.add(emeny);
+                }
         return emeny;
+        
     }
 
     setEmeny(key, posX, posY, subtype){
@@ -319,16 +415,116 @@ class Mainlevel extends Phaser.Scene {
             case 'Wriggle':
                 emeny = new Wriggle(this, posX, posY, subtype);
                 break;
+            case 'Daiyousei':
+                emeny = new Daiyousei(this, posX, posY, subtype);
+                break;
+            case 'Crino':
+                emeny = new Crino(this, posX, posY, subtype);
+                break;
+            case 'DestructionIce':
+                emeny = new Destruction(this, posX, posY, subtype);
+                break;
             default:
                 console.warn(`Unknown enemy type: ${Emeny}`);
                 return;
         }
         return emeny;
     }
-    levelBump() {
-        // increment level (ie, score)
-        //emenySpeed = emenySpeed + 0.5;
+    getReflection(bulletType) {
+        let rate = 70; // ✅ Default reflection rate
+    
+        // ✅ Adjust reflection rate based on bullet type
+        /*
+        switch (bulletType) {
+            case 'blueSmallCircleBullet':
+                rate = 40;
+                break;
+            case 'blueMediumCircleBullet':
+                rate = 50;
+                break;
+            case 'blueLargeCircleBullet':
+                rate = 60;
+                break;    
+        }*/
+    
+        return rate;
     }
 
+    
+    
+    reflect(bullet, normalX = 0, normalY = -1) {
+        if(bullet.isReflected)
+            return;
+        let rate = this.getReflection(bullet.type); // ✅ Get reflection rate
+        let newBullet = this.shootingLogic.getBullet( bullet.type, rumia, bullet.speed,false);
+        newBullet.x = bullet.x;
+        newBullet.y = bullet.y;
+        
+        let target = bullet.shooter;
+        if(target.type == 'distruction' && target.master){
+            target = target.master;
+        }
+        let vx = bullet.vx;
+        let vy = bullet.vy;
+
+
+
+        bullet.dropOff(false); // ✅ Destroy original bullet
+        newBullet.target = target;
+        newBullet.shooter = rumia
+        let randomChance = Phaser.Math.Between(0, 100);
+        if (randomChance < rate && target && !target.isDrop) {
+            newBullet = this.targetReflect(newBullet, target); // ✅ Regenerate bullet toward shooter
+        } else {
+            newBullet = this.normalReflect(newBullet, normalX, normalY,vx,vy); // ✅ Regenerate bullet at reflected angle
+        }
+        // ✅ Remove collision with Rumia so the bullet doesn't hit again
+        this.physics.world.colliders.getActive().forEach(collider => {
+            if (collider.object1 === newBullet && collider.object2 === rumia) {
+                collider.destroy();
+            }
+        });
+        newBullet.isReflected = true;    
+        newBullet.setTint(0x00ff00);
+        this.EmenyGroup.children.iterate(emeny => {
+            this.physics.add.overlap(emeny, newBullet, (emeny, newBullet) => {
+                this.bulletCollision(emeny, newBullet);
+            });
+        });
+       
+
+        this.bulletGroup.add(newBullet);
+    }
+    
+    normalReflect(bullet, normalX = 0, normalY = -1, px,py) {
+        let normalVector = new Phaser.Math.Vector2(normalX, normalY).normalize();
+        let velocity = new Phaser.Math.Vector2(px, py);
+        let reflectedVelocity = velocity.reflect(normalVector);
+        
+        let angleVariation = Phaser.Math.Between(-10, 10); // ✅ Randomize reflection angle
+        reflectedVelocity.rotate(Phaser.Math.DEG_TO_RAD * angleVariation);
+        
+        bullet.vx = reflectedVelocity.x;
+        bullet.vy = reflectedVelocity.y;
+    
+        // ✅ Ensure bullet moves by applying speed
+        //bullet.vx *= bullet.speed;
+       // bullet.vy *= bullet.speed;
+    
+        return bullet;
+    }
+    
+    targetReflect(bullet, target) {
+       
+        
+        // ✅ Bounce back directly toward shooter
+        let direction = new Phaser.Math.Vector2(target.x - bullet.x, target.y - bullet.y).normalize();
+        bullet.vx = direction.x * bullet.speed;
+        bullet.vy = direction.y * bullet.speed;
+        return bullet;
+    }
+    clearScreen(){
+
+    }
     
 }

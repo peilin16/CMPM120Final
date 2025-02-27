@@ -69,15 +69,10 @@ class Level1 extends Mainlevel {
         });*/
         
         
-
-
-
-
-        
         this.current = 0;
         this.emenySpawn = [
             this.midBossSpawn.bind(this),
-            this.emenySpawn7.bind(this),
+            this.emenySpawn1.bind(this),
             this.emenySpawn2.bind(this),
             this.emenySpawn3.bind(this),
             this.emenySpawn4.bind(this),
@@ -85,18 +80,19 @@ class Level1 extends Mainlevel {
             this.emenySpawn6.bind(this),
             this.emenySpawn7.bind(this),
             this.midBossSpawn.bind(this),
+            this.emenySpawn9.bind(this),
+            this.emenySpawn10.bind(this),
+            this.emenySpawn11.bind(this),
+            this.emenySpawn12.bind(this),
+            this.emenySpawn13.bind(this),
             this.finalBossSpawn.bind(this),
             
-            
-            
-            //
-            
-            
         ];
-        
-
-
-
+        this.rumiaSpeechWithWriggle = ['aaa','test','test1'];
+        this.rumiaSpeechWithCrino = ['aaa','test','test1'];
+        this.wriggleSpeech = ['www','aa','test']
+        this.crinoSpeech = ['ccc','cbc','ccca']
+        this.isSpeech = false;
         // ✅ Start the first wave
         this.nextWave();
 
@@ -115,7 +111,8 @@ class Level1 extends Mainlevel {
 
 
     update(){
-        
+        if(this.isSpeech)
+            return;
         super.update();
         this.backgroundforest.tilePositionX += 2; // Adjust speed as needed
         this.trees.children.iterate(tree => {
@@ -231,7 +228,7 @@ class Level1 extends Mainlevel {
             this.time.delayedCall(12000, () => {this.spawnEmeny(1, 'list', 'DivineSpirit','blue','r_sbl1_srl1_srl1_tb',460);})
             this.time.delayedCall(13500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t',180)} , [], this);//step2
             this.time.delayedCall(13500, () => {this.spawnEmeny(1, 'list', 'DivineSpirit','blue','r_sbl1_srl1_srl1_tb',460);})
-            this.time.delayedCall(18000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
+            this.time.delayedCall(20000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
         }
     }
     emenySpawn7(){
@@ -249,12 +246,119 @@ class Level1 extends Mainlevel {
             this.isSprawn = true;
             this.boss = this.spawnEmeny(1, 'list', 'Wriggle','','r_sbf4_srf1')
             //this.time.delayedCall(20, () => {;})
-            //this.bossHealthBarBG.setVisible(true);
+            this.bossHealthTotal = this.boss.healthly;
             this.bossHealthBar.setVisible(true);
+            if(this.boss.isDrop){
+                this.current += 1;
+                this.isSprawn = false;
+                this.boss = null;
+            }
+            this.time.delayedCall(2600, () => {
+                this.startDialogue('Rumia', this.rumiaSpeechWithWriggle, 'Wriggle Nightbug', this.wriggleSpeech);
+            });
+        }
+    }
+    emenySpawn9(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.time.delayedCall(2000, () => {this.spawnEmeny(1, 'list', 'Daiyousei','','healthly',200);});
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t',480)} , [], this);//step2
+            this.time.delayedCall(3400, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t',480)} , [], this);//step2
+            this.time.delayedCall(5000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t',480)} , [], this);//step2
+            this.time.delayedCall(6500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t',480)} , [], this);//step2
+            this.time.delayedCall(8000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t',480)} , [], this);//step2
+            this.time.delayedCall(9500, () =>{super.spawnEmeny(8,'list','Kedama','','l2',80)} , [], this);//step2
+            this.time.delayedCall(14000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
+        }
+    }
+    emenySpawn10(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.time.delayedCall(1000, () =>{super.spawnEmeny(1,'list','SunFlowerFairy','SunFlowerFairy','r5_s5Fs6L_tL',120)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(4000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2\
+            this.time.delayedCall(6000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(8000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(10000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(12000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(14000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(16000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(18000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(20000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',440)} , [], this);//step2
+            this.time.delayedCall(26000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
+        }
+    }
+    emenySpawn11(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','t_sbf2t_srl1_b',-70, 350)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','t_sbf2t_srl1_b',-70, 550)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','t_sbf2t_srl1_b',-70, 750)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','t_sbf2t_srl1_b',-70, 950)} , [], this);//step2
+            this.time.delayedCall(1600, () =>{super.spawnEmeny(6,'list','Kedama','','l2',80)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','b_sbf2t_srl1_t',boardheigh + 70, 350)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','b_sbf2t_srl1_t',boardheigh + 70, 550)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','b_sbf2t_srl1_t',boardheigh + 70, 750)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','b_sbf2t_srl1_t',boardheigh + 70, 950)} , [], this);//step2
+            this.time.delayedCall(6000, () =>{super.spawnEmeny(7,'arrow','Kedama','','hp_3o6')} , [], this);//step2
+            this.time.delayedCall(14000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
+        }
+    }
+    emenySpawn12(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.time.delayedCall(1000, () =>{super.spawnEmeny(1,'list','SunFlowerFairy','SunFlowerFairy','r5_s5Fs6L_tL',520)} , [], this);//step2
+            this.time.delayedCall(2000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(4000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2\
+            this.time.delayedCall(6000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(8000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(10000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(12000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(14000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(16000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(18000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(20000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_r3l_at',140)} , [], this);//step2
+            this.time.delayedCall(26000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
+        }
+    }
+    emenySpawn13(){
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.time.delayedCall(1000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t')} , [], this);//step2
+            this.time.delayedCall(3000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t')} , [], this);//step2
+            this.time.delayedCall(1000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',150)} , [], this);//step2
+            this.time.delayedCall(1000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',450)} , [], this);//step2
+            this.time.delayedCall(3500, () =>{super.spawnEmeny(5,'list','Kedama','','l2',160)} , [], this);//step2
+            this.time.delayedCall(5000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t')} , [], this);//step2
+            this.time.delayedCall(3400, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',150)} , [], this);//step2
+            this.time.delayedCall(3400, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',450)} , [], this);//step2
+            this.time.delayedCall(7000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t')} , [], this);//step2
+            this.time.delayedCall(5500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',150)} , [], this);//step2
+            this.time.delayedCall(5500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',450)} , [], this);//step2
+            this.time.delayedCall(8000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t')} , [], this);//step2
+            this.time.delayedCall(7500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',150)} , [], this);//step2
+            this.time.delayedCall(7500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',450)} , [], this);//step2
+            this.time.delayedCall(9000, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy1','r_sbf3t_srf2t')} , [], this);//step2
+            this.time.delayedCall(8500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',150)} , [], this);//step2
+            this.time.delayedCall(8500, () =>{super.spawnEmeny(1,'list','MaidFairy','MaidFairy2','r_sb4f_at',450)} , [], this);//step2
+            this.time.delayedCall(20000, () =>{this.isSprawn = false; this.current +=1} , [], this);//step2
         }
     }
     finalBossSpawn(){
-
+        if(!this.isSprawn){
+            this.isSprawn = true;
+            this.boss =super.spawnEmeny(1,'list','Crino','Crino','r_sTf9_sTf8')//step2
+            this.bossHealthTotal = this.boss.healthly;
+            this.bossHealthBar.setVisible(true);
+            if(this.boss.isDrop){
+                this.current += 1;
+                this.isSprawn = false;
+                this.boss = null;
+            }
+            this.time.delayedCall(2800, () => {
+                this.startDialogue('Rumia', this.rumiaSpeechWithCrino, 'Crino', this.crinoSpeech);
+            });
+        }
     }
   
 }

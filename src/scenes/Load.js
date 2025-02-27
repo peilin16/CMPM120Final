@@ -43,7 +43,7 @@ class Load extends Phaser.Scene {
         this.load.image('DaiyouseiScore2', './assets/character/Daiyousei-score2.png');
 
         
-
+//WriggleHit
 
         //flower fairy load
         this.load.image('sunflowerFairy1', './assets/character/sunflowerFairy1.png');
@@ -71,7 +71,18 @@ class Load extends Phaser.Scene {
         this.load.image('Wriggle1', './assets/character/Wriggle1.png');
         this.load.image('Wriggle2', './assets/character/Wriggle2.png');
         this.load.image('Wriggle3', './assets/character/Wriggle3.png');
+        this.load.image('WriggleHit', './assets/character/WriggleHit.png');
+        
 
+        this.load.image('Crino1', './assets/character/crino-fly1.png');
+        this.load.image('CrinoFront', './assets/character/crino.png');
+        this.load.image('CrinoHit', './assets/character/CrinoHit.png');
+        
+        
+        
+        
+        
+        
         //bullet load
         this.load.image('blueSmallCircleBullet','./assets/img/blueSmallCircleBullet.png');
         this.load.image('blueMediumCircleBullet','./assets/img/blueMediumCircleBullet.png');
@@ -86,13 +97,43 @@ class Load extends Phaser.Scene {
 
         this.load.image('blueLongSemicircleBullet','./assets/img/blueLongSemicircleBullet.png');
         this.load.image('redLongSemicircleBullet','./assets/img/redLongSemicircleBullet.png');
+        this.load.image('redExtremeLongSemicircleBullet','./assets/img/redExtremeLongSemicircleBullet.png');
+        
+        this.load.image('blueArrowBullet','./assets/img/blueArrowBullet.png');
+        this.load.image('redArrowBullet','./assets/img/redArrowBullet.png');
         this.load.image('bug','./assets/img/bug.png');
+        this.load.image('ice','./assets/img/ice.png');
+        this.load.image('iceTop','./assets/img/iceTop.png');
         //element load
-        this.load.image('bug','./assets/img/score.png');
+        this.load.image('score','./assets/img/score.png');
         //test load
         //this.load.image('test',  'https://labs.phaser.io/assets/sprites/phaser3-logo.png');
+//ExplosionSmall1_1
+        this.load.image('ExplosionSmall1_1','./assets/img/ExplosionSmall1_1.png');
+        this.load.image('ExplosionSmall1_2','./assets/img/ExplosionSmall1_2.png');
+        this.load.image('ExplosionSmall1_3','./assets/img/ExplosionSmall1_3.png');
+        this.load.image('ExplosionSmall1_4','./assets/img/ExplosionSmall1_4.png');
+        this.load.image('ExplosionSmall1_5','./assets/img/ExplosionSmall1_5.png');
+        this.load.image('ExplosionSmall1_6','./assets/img/ExplosionSmall1_6.png');
+        this.load.image('ExplosionSmall1_7','./assets/img/ExplosionSmall1_7.png');
 
-        
+        this.load.image('ExplosionSmall2_1','./assets/img/ExplosionSmall2_1.png');
+        this.load.image('ExplosionSmall2_2','./assets/img/ExplosionSmall2_2.png');
+        this.load.image('ExplosionSmall2_3','./assets/img/ExplosionSmall2_3.png');
+        this.load.image('ExplosionSmall2_4','./assets/img/ExplosionSmall2_4.png');
+        this.load.image('ExplosionSmall2_5','./assets/img/ExplosionSmall2_5.png');
+        this.load.image('ExplosionSmall2_6','./assets/img/ExplosionSmall2_6.png');
+        this.load.image('ExplosionSmall2_7','./assets/img/ExplosionSmall2_7.png');
+
+        this.load.image('ExplosionLarge1_1','./assets/img/ExplosionLarge1_1.png');
+        this.load.image('ExplosionLarge1_2','./assets/img/ExplosionLarge1_2.png');
+        this.load.image('ExplosionLarge1_3','./assets/img/ExplosionLarge1_3.png');
+        this.load.image('ExplosionLarge1_4','./assets/img/ExplosionLarge1_4.png');
+        this.load.image('ExplosionLarge1_5','./assets/img/ExplosionLarge1_5.png');
+        this.load.image('ExplosionLarge1_6','./assets/img/ExplosionLarge1_6.png');
+        this.load.image('ExplosionLarge1_7','./assets/img/ExplosionLarge1_7.png');
+        this.load.image('ExplosionLarge1_8','./assets/img/ExplosionLarge1_8.png');
+
         this.load.audio('hitHurt1', './assets/audio/hitHurt1.wav');
         this.load.audio('hitHurt2', './assets/audio/hitHurt2.wav');
         this.load.audio('hitHurt3', './assets/audio/hitHurt3.wav');
