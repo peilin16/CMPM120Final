@@ -1,8 +1,8 @@
 # Touhou-Luna-Night
 ## Overview:
 This project is a Touhou-inspired fan game developed using Phaser with JavaScript.
-It is a side-scrolling bullet hell game where the player survives waves of enemy attacks by reflecting enemy bullets back at them.
-Instead of traditional shooting mechanics, the player’s main attack method is to enter defense mode and reflect specific enemy bullets. Successfully reflecting bullets can defeat enemies and create score items that the player must collect.
+It is a side-scrolling bullet hell game where the player survives waves of enemy attacks by rebounding enemy bullets back at them.
+Instead of traditional shooting mechanics, the player’s main attack method is to enter defense mode and rebound specific enemy bullets. Successfully rebounding bullets can defeat enemies and create score items that the player must collect.
 The game contains four level, each level have two different boss and different design.
 ## Control:
 W A S D — Move the player
@@ -13,11 +13,11 @@ W S: make choose. Space: decide
 ## Core Mechanics
 Defense Mode
 
-When the player enters Defense Mode, they can reflect certain bullets back toward enemies.
+When the player enters Defense Mode, they can rebound certain bullets back toward enemies.
 
-Blue Bullets can be reflected.
+Blue Bullets can be rebounded.
 
-Red Bullets cannot be reflected.
+Red Bullets cannot be rebounded.
 
 If the player collides with a red bullet while in Defense Mode, a 4-second cooldown will begin during which the player cannot enter Defense Mode again.
 
@@ -31,9 +31,9 @@ If the player collides with a red bullet while in Defense Mode, a 4-second coold
 
 4:Score, When an enemy is shot down, a score will appear on the screen. Players need to collect the scores on the screen to score.
 
-5:Red Bullet: player can not reflect this type of bullet.
+5:Red Bullet: player can not rebound this type of bullet.
 
-6:Blue Bullet, player can reflect this type of bullet.
+6:Blue Bullet, player can rebound this type of bullet.
 
 ![Introduct](33.JPG)
 1:Daiyousei When she appears, you can increase your health by touching her.
